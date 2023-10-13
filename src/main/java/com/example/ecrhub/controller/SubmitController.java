@@ -29,9 +29,6 @@ import java.util.Date;
 public class SubmitController {
 
     @FXML
-    private Button returnButton;
-
-    @FXML
     private Button submitButton;
 
     @FXML
@@ -42,7 +39,8 @@ public class SubmitController {
 
     private Task<String> task = null;
 
-    public TextField trans_amount;
+    @FXML
+    private Label trans_amount;
 
     ECRHubClient client = null;
 
@@ -51,30 +49,14 @@ public class SubmitController {
         progress_indicator.setVisible(false);
         wait_label.setVisible(false);
 
-        trans_amount.requestFocus();
-        trans_amount.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // 数据改变
-                if (oldValue && !newValue) {
-                    // 添加事件
-                    String amount_str = trans_amount.getText();
-                    if (StrUtil.isNotEmpty(amount_str)) {
-                        BigDecimal amount;
-                        try {
-                            amount = new BigDecimal(amount_str);
-                            trans_amount.setText(amount.setScale(2, RoundingMode.HALF_UP).toPlainString());
-                        } catch (Exception e) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("ERROR!");
-                            alert.setContentText("Please enter the correct amount");
-                            alert.showAndWait();
-                            trans_amount.setText(null);
-                        }
-                    }
-                }
-            }
-        });
+        if (PurchaseManager.getInstance().getTrans_amount() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR!");
+            alert.setContentText("Amount error!");
+            alert.showAndWait();
+        } else {
+            trans_amount.setText(PurchaseManager.getInstance().getTrans_amount().getText());
+        }
     }
 
     @FXML
@@ -82,7 +64,7 @@ public class SubmitController {
         if (task != null && task.isRunning()) {
             task.cancel();
         }
-        SceneManager.getInstance().switchScene("home");
+        SceneManager.getInstance().switchScene("shopping");
     }
 
     @FXML
@@ -102,10 +84,9 @@ public class SubmitController {
             protected String call() throws Exception {
                 progress_indicator.setVisible(true);
                 wait_label.setVisible(true);
-                trans_amount.setDisable(true);
                 submitButton.setDisable(true);
 
-                PurchaseManager.getInstance().setResponse(requestToECR(amount_str));
+                PurchaseManager.getInstance().setResponse(requestToECR(amount_str.replace("$", "")));
                 return "success";
             }
         };
@@ -118,7 +99,6 @@ public class SubmitController {
         task.setOnFailed(fail -> {
             progress_indicator.setVisible(false);
             wait_label.setVisible(false);
-            trans_amount.setDisable(false);
             submitButton.setDisable(false);
 
             disconnectClient();

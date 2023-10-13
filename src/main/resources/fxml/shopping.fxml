@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ecrhub.controller.ShoppingController">
+    <BorderPane fx:id="container" prefHeight="400.0" prefWidth="500.0">
+        <left>
+            <GridPane fx:id="productGrid" alignment="CENTER" hgap="20" vgap="20" />
+        </left>
+        <right>
+            <VBox alignment="CENTER" minWidth="200.0" BorderPane.alignment="TOP_CENTER">
+                <ListView fx:id="listView" prefHeight="300.0" prefWidth="100.0" />
+                <HBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+                    <Label text="Total to pay: " />
+                    <Label text="\$0" fx:id="amount">
+                  <HBox.margin>
+                     <Insets left="-10.0" />
+                  </HBox.margin>
+                  <font>
+                     <Font size="20.0" />
+                  </font></Label>
+                </HBox>
+            <opaqueInsets>
+               <Insets />
+            </opaqueInsets>
+            <BorderPane.margin>
+               <Insets right="20.0" />
+            </BorderPane.margin>
+            <padding>
+               <Insets right="20.0" />
+            </padding>
+            </VBox>
+        </right>
+        <bottom>
+            <HBox alignment="CENTER" spacing="20.0" minWidth="200.0" BorderPane.alignment="TOP_CENTER">
+                <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
+                <Button mnemonicParsing="false" text="Next" onAction="#handleNextButtonAction"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+</VBox>

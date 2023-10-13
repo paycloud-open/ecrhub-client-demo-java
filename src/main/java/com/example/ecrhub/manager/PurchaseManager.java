@@ -1,6 +1,7 @@
 package com.example.ecrhub.manager;
 
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
+import javafx.scene.control.Label;
 
 /**
  * @author: yanzx
@@ -16,6 +17,8 @@ public class PurchaseManager {
 
     private PurchaseResponse response;
 
+    private Label trans_amount;
+
     public static PurchaseManager getInstance() {
         if (instance == null) {
             instance = new PurchaseManager();
@@ -29,5 +32,13 @@ public class PurchaseManager {
 
     public void setResponse(PurchaseResponse response) {
         this.response = response;
+    }
+
+    public Label getTrans_amount() {
+        return trans_amount;
+    }
+
+    public void setTrans_amount(Label trans_amount) {
+        this.trans_amount = trans_amount;
     }
 }

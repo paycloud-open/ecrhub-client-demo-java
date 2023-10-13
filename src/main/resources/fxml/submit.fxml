@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.text.Font?>
 <VBox alignment="CENTER" prefHeight="231.0" prefWidth="330.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ecrhub.controller.SubmitController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -11,7 +12,11 @@
    <children>
        <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
            <Label text="Trans Amount: " />
-           <TextField fx:id="trans_amount" prefHeight="26.0" prefWidth="200.0" promptText="Please enter trans amount" />
+           <Label fx:id="trans_amount" prefHeight="26.0" prefWidth="200.0">
+               <font>
+                   <Font size="20.0" />
+               </font>
+           </Label>
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
             <ProgressIndicator  fx:id="progress_indicator" />
@@ -20,7 +25,7 @@
            <Label  text="Please wait..." fx:id="wait_label"/>
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
-           <Button fx:id="returnButton" mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
+           <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit" />
        </HBox>
    </children>

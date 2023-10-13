@@ -49,8 +49,8 @@ public class JumpController {
 
     @FXML
     private void handleNextButtonAction(ActionEvent event) {
-        SceneManager.getInstance().loadScene("submit", "/fxml/submit.fxml");
-        SceneManager.getInstance().switchScene("submit");
+        SceneManager.getInstance().loadScene("shopping", "/fxml/shopping.fxml");
+        SceneManager.getInstance().switchScene("shopping");
     }
 
     private void setCenter(URL url) throws IOException {
