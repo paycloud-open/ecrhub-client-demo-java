@@ -44,6 +44,8 @@ public class SubmitController {
 
     public TextField trans_amount;
 
+    ECRHubClient client = null;
+
     public void initialize() {
         progress_indicator.setDisable(true);
         progress_indicator.setVisible(false);
@@ -119,6 +121,7 @@ public class SubmitController {
             trans_amount.setDisable(false);
             submitButton.setDisable(false);
 
+            disconnectClient();
             alert.setContentText("Connect to ECH Hub error!");
             alert.showAndWait();
         });
@@ -128,79 +131,38 @@ public class SubmitController {
             wait_label.setVisible(false);
             trans_amount.setDisable(false);
             submitButton.setDisable(false);
+
+            disconnectClient();
         });
 
         Thread thread = new Thread(task);
         thread.start();
-
-        // Connect to ECR Hub
-//        ECRHubConfig config = new ECRHubConfig(CommonConstant.APP_ID);
-//        ECRHubClient client;
-//        try {
-//            client = ECRHubClientFactory.create("sp://", config);
-//            client.connect();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            alert.setContentText("Connect to ECH Hub error!");
-//            alert.showAndWait();
-//            return;
-//        }
-//
-//        // Purchase
-//        PurchaseRequest request = new PurchaseRequest();
-//        request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
-//        request.setOrder_amount(amount_str);
-//        request.setPay_method_category("BANKCARD");
-//
-//        // Execute purchase request
-//        PurchaseResponse response;
-//        try {
-//            response = client.execute(request);
-//            System.out.println("Purchase Response:" + response);
-//        } catch (Exception e) {
-//            alert.setContentText("Purchase request to ECH Hub error!");
-//            alert.showAndWait();
-//            try {
-//                client.disconnect();
-//            } catch (Exception de) {}
-//            return;
-//        }
-//
-////        PurchaseResponse response = new PurchaseResponse();
-////        response.setOrder_amount(amount_str);
-////        response.setMerchant_order_no("test1123123");
-////        response.setPaid_amount("323");
-//
-//        PurchaseManager.getInstance().setResponse(response);
-
-//        SceneManager.getInstance().loadScene("response", "/fxml/response.fxml");
-//        SceneManager.getInstance().switchScene("response");
     }
 
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
-        ECRHubClient client = null;
+        ECRHubConfig config = new ECRHubConfig(CommonConstant.APP_ID);
+        client = ECRHubClientFactory.create("sp://", config);
+        client.connect();
+
+        // Purchase
+        PurchaseRequest request = new PurchaseRequest();
+        request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
+        request.setOrder_amount(amount_str);
+        request.setPay_method_category("BANKCARD");
+
+        // Execute purchase request
+        PurchaseResponse response = client.execute(request);
+        System.out.println("Purchase Response:" + response);
+        disconnectClient();
+        return response;
+    }
+
+    private void disconnectClient() {
         try {
-            ECRHubConfig config = new ECRHubConfig(CommonConstant.APP_ID);
-            client = ECRHubClientFactory.create("sp://", config);
-            client.connect();
+            client.disconnect();
+        } catch (Exception e) {
 
-            // Purchase
-            PurchaseRequest request = new PurchaseRequest();
-            request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
-            request.setOrder_amount(amount_str);
-            request.setPay_method_category("BANKCARD");
-
-            // Execute purchase request
-            PurchaseResponse response = client.execute(request);
-            System.out.println("Purchase Response:" + response);
-            return response;
-        } finally {
-            try {
-                client.disconnect();
-            } catch (Exception e) {
-
-            }
         }
     }
 }
