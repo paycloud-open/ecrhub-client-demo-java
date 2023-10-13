@@ -94,6 +94,7 @@ public class SubmitController {
             alert.showAndWait();
             return;
         }
+
         task = new Task<String>() {
             @Override
             protected String call() throws Exception {
@@ -120,6 +121,13 @@ public class SubmitController {
 
             alert.setContentText("Connect to ECH Hub error!");
             alert.showAndWait();
+        });
+
+        task.setOnCancelled(cancel -> {
+            progress_indicator.setVisible(false);
+            wait_label.setVisible(false);
+            trans_amount.setDisable(false);
+            submitButton.setDisable(false);
         });
 
         Thread thread = new Thread(task);
@@ -171,21 +179,28 @@ public class SubmitController {
 
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
-        ECRHubConfig config = new ECRHubConfig(CommonConstant.APP_ID);
-        ECRHubClient client;
-        client = ECRHubClientFactory.create("sp://", config);
-        client.connect();
+        ECRHubClient client = null;
+        try {
+            ECRHubConfig config = new ECRHubConfig(CommonConstant.APP_ID);
+            client = ECRHubClientFactory.create("sp://", config);
+            client.connect();
 
-        // Purchase
-        PurchaseRequest request = new PurchaseRequest();
-        request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
-        request.setOrder_amount(amount_str);
-        request.setPay_method_category("BANKCARD");
+            // Purchase
+            PurchaseRequest request = new PurchaseRequest();
+            request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
+            request.setOrder_amount(amount_str);
+            request.setPay_method_category("BANKCARD");
 
-        // Execute purchase request
-        PurchaseResponse response = client.execute(request);
-        System.out.println("Purchase Response:" + response);
+            // Execute purchase request
+            PurchaseResponse response = client.execute(request);
+            System.out.println("Purchase Response:" + response);
+            return response;
+        } finally {
+            try {
+                client.disconnect();
+            } catch (Exception e) {
 
-        return response;
+            }
+        }
     }
 }
