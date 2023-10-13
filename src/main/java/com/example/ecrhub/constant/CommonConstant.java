@@ -7,5 +7,5 @@ package com.example.ecrhub.constant;
  */
 public interface CommonConstant {
 
-    String APP_ID = "app_id";
+    String APP_ID = "wz6012822ca2f1as78";
 }
