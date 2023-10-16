@@ -9,6 +9,7 @@ import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
 import com.wiseasy.ecr.hub.sdk.ECRHubConfig;
 import com.wiseasy.ecr.hub.sdk.model.request.PurchaseRequest;
+import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -121,12 +122,13 @@ public class SubmitController {
 
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
-        ECRHubConfig config = new ECRHubConfig(CommonConstant.APP_ID);
-        client = ECRHubClientFactory.create("sp://", config);
-        client.connect();
+        client = ECRHubClientFactory.create("sp://");
+        ECRHubResponse ecrHubResponse = client.connect2();
+        System.out.println("ECR-HUB Response:" + ecrHubResponse);
 
         // Purchase
         PurchaseRequest request = new PurchaseRequest();
+        request.setApp_id(CommonConstant.APP_ID);
         request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
         request.setOrder_amount(amount_str);
         request.setPay_method_category("BANKCARD");
