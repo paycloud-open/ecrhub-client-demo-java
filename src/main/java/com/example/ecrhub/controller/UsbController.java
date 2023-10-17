@@ -79,7 +79,12 @@ public class UsbController {
             wait_vbox.setManaged(false);
             connect_info.setVisible(true);
             connect_info.setManaged(true);
+            try {
+                ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+                client.disconnect();
+            } catch (Exception e) {
 
+            }
             connectButton.setDisable(false);
             disconnectButton.setDisable(true);
             connect_info.setText("Unconnected!");
