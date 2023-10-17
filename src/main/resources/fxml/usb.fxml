@@ -6,6 +6,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Label?>
 <VBox alignment="CENTER" prefHeight="213.0" prefWidth="276.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ecrhub.controller.UsbController">
     <padding>
@@ -17,6 +19,11 @@
             <Button mnemonicParsing="false" text="Disconnect" fx:id="disconnectButton" disable="true"
                     onAction="#disconnectButtonAction"/>
         </HBox>
+        <VBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER" visible="false" managed="false" fx:id="wait_vbox">
+            <ProgressIndicator/>
+            <Label text="Please wait..."/>
+            <Button mnemonicParsing="false" text="Cancel" onAction="#cancelAction"/>
+        </VBox>
         <TextArea text="Unconnected!" disable="true" fx:id="connect_info"/>
     </children>
 </VBox>

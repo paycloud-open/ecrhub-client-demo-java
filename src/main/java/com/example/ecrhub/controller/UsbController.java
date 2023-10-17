@@ -7,11 +7,9 @@ import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 
 /**
  * @author: yanzx
@@ -30,27 +28,23 @@ public class UsbController {
 
     private Task<String> task = null;
 
-    private Alert alert;
+    @FXML
+    private VBox wait_vbox;
 
     @FXML
     private void connectButtonAction(ActionEvent event) {
-        alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Connecting...");
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/wait.fxml"));
-            loader.load();
-            Parent root = loader.getRoot();
-            alert.setGraphic(root);
-        } catch (Exception e) {
-        }
 
         task = new Task<String>() {
             @Override
             protected String call() throws Exception {
                 connectButton.setDisable(true);
 
+                wait_vbox.setVisible(true);
+                wait_vbox.setManaged(true);
+                connect_info.setVisible(false);
+                connect_info.setManaged(false);
+
                 ECRHubClient client = ECRHubClientManager.getInstance().getClient();
-                alert.show();
                 ECRHubResponse ecrHubResponse = client.connect2();
                 return JSONFormatUtil.formatJson(ecrHubResponse);
             }
@@ -58,21 +52,34 @@ public class UsbController {
 
         task.setOnSucceeded(success -> {
             String response_info = task.getValue();
-            alert.close();
+
+            wait_vbox.setVisible(false);
+            wait_vbox.setManaged(false);
+            connect_info.setVisible(true);
+            connect_info.setManaged(true);
+
             connectButton.setDisable(true);
             disconnectButton.setDisable(false);
             connect_info.setText(response_info);
         });
 
         task.setOnFailed(fail -> {
-            alert.close();
+            wait_vbox.setVisible(false);
+            wait_vbox.setManaged(false);
+            connect_info.setVisible(true);
+            connect_info.setManaged(true);
+
             connectButton.setDisable(false);
             disconnectButton.setDisable(true);
             connect_info.setText("Unconnected! \n Connect error! Please try again!");
         });
 
         task.setOnCancelled(cancel -> {
-            alert.close();
+            wait_vbox.setVisible(false);
+            wait_vbox.setManaged(false);
+            connect_info.setVisible(true);
+            connect_info.setManaged(true);
+
             connectButton.setDisable(false);
             disconnectButton.setDisable(true);
             connect_info.setText("Unconnected!");
