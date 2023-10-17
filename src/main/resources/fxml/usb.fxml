@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.control.Label?>
-<VBox alignment="CENTER" prefHeight="213.0" prefWidth="276.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox alignment="CENTER" prefHeight="300.0" prefWidth="276.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ecrhub.controller.UsbController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
@@ -19,11 +14,14 @@
             <Button mnemonicParsing="false" text="Disconnect" fx:id="disconnectButton" disable="true"
                     onAction="#disconnectButtonAction"/>
         </HBox>
-        <VBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER" visible="false" managed="false" fx:id="wait_vbox">
+        <VBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER" visible="false"
+              managed="false" fx:id="wait_vbox">
             <ProgressIndicator/>
             <Label text="Please wait..."/>
             <Button mnemonicParsing="false" text="Cancel" onAction="#cancelAction"/>
         </VBox>
-        <TextArea text="Unconnected!" disable="true" fx:id="connect_info"/>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <TextArea text="Unconnected!" editable="false" fx:id="connect_info"/>
+        </ScrollPane>
     </children>
 </VBox>
