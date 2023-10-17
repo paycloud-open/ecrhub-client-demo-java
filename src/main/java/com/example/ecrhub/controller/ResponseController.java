@@ -6,10 +6,7 @@ import com.example.ecrhub.util.JSONFormatUtil;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 /**
  * @author: yanzx
@@ -36,6 +33,10 @@ public class ResponseController {
         }
         trans_amount.setText(response.getOrder_amount());
         merchant_order_no.setText(response.getMerchant_order_no());
+
+        ScrollPane scrollPane = (ScrollPane) response_info.getChildrenUnmodifiable().get(0);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);  // 始终显示垂直滚动条
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);  // 根据需要显示水平滚动条
         response_info.setText(JSONFormatUtil.formatJson(response));
     }
 

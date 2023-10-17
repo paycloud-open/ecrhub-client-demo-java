@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -65,7 +66,9 @@ public class ShoppingController {
             // 包含商品图标、名称和价格的 VBox
             HBox productBox = new HBox(5);
             productBox.setAlignment(Pos.CENTER);
-            productBox.getChildren().addAll(imageView, nameLabel, priceLabel);
+            VBox priceBox = new VBox(5);
+            priceBox.getChildren().addAll(nameLabel, priceLabel);
+            productBox.getChildren().addAll(imageView, priceBox);
 
             // 商品点击事件
             productBox.setOnMouseClicked(event -> addToCart(productName, productPrice));
