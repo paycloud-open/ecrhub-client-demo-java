@@ -92,6 +92,7 @@ public class ShoppingController {
 
     @FXML
     private void handleReturnButtonAction(ActionEvent event) {
+        SceneManager.getInstance().loadScene("home", "/fxml/home.fxml");
         SceneManager.getInstance().switchScene("home");
     }
 
