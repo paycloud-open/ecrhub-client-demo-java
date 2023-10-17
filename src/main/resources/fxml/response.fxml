@@ -19,7 +19,7 @@
        </HBox>
        <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
            <Label minWidth="150" text="Response information: " />
-           <TextArea prefHeight="200.0" disable="true" wrapText="true" prefWidth="300.0" fx:id="response_info"/>
+           <TextArea prefHeight="300.0" disable="true" wrapText="true" prefWidth="400.0" fx:id="response_info"/>
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
            <Button fx:id="returnButton" mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />

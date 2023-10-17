@@ -4,6 +4,7 @@ import com.example.ecrhub.manager.PurchaseManager;
 import com.example.ecrhub.manager.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -41,8 +42,11 @@ public class ShoppingController {
                 {"Beer", "5.00"},
                 {"Coffee", "8.80"},
                 {"Hamburg", "10.00"},
+                {"Waffle", "0.98"},
                 {"Milk", "3.50"},
                 {"Pasta", "20.00"},
+                {"Pudding", "3.33"},
+                {"Cocktail", "12.00"},
                 {"Steak", "15.00"}
         };
 
@@ -64,9 +68,12 @@ public class ShoppingController {
             Label priceLabel = new Label("$" + productPrice);
 
             // 包含商品图标、名称和价格的 VBox
-            HBox productBox = new HBox(5);
+            VBox productBox = new VBox(5);
             productBox.setAlignment(Pos.CENTER);
-            VBox priceBox = new VBox(5);
+            Insets productInsets = new Insets(0, 0, 0, 30);
+            productBox.setPadding(productInsets);
+
+            HBox priceBox = new HBox(5);
             priceBox.getChildren().addAll(nameLabel, priceLabel);
             productBox.getChildren().addAll(imageView, priceBox);
 
@@ -76,7 +83,7 @@ public class ShoppingController {
             productGrid.add(productBox, col, row);
 
             col++;
-            if (col > 1) {
+            if (col > 2) {
                 col = 0;
                 row++;
             }
