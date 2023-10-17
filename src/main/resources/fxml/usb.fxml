@@ -20,8 +20,6 @@
             <Label text="Please wait..."/>
             <Button mnemonicParsing="false" text="Cancel" onAction="#cancelAction"/>
         </VBox>
-        <ScrollPane fitToWidth="true" fitToHeight="true">
-            <TextArea text="Unconnected!" editable="false" fx:id="connect_info"/>
-        </ScrollPane>
+        <TextArea text="Unconnected!" editable="false" fx:id="connect_info"/>
     </children>
 </VBox>
