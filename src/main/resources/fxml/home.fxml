@@ -23,7 +23,7 @@
 
         </center>
         <bottom>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Next" textAlignment="CENTER" BorderPane.alignment="CENTER" fx:id="nextButton" onAction="#handleNextButtonAction"/>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Next" textAlignment="CENTER" BorderPane.alignment="CENTER"  onAction="#handleNextButtonAction"/>
         </bottom>
     </BorderPane>
 </VBox>

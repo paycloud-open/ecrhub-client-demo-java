@@ -18,6 +18,8 @@ public class ECRHubClientManager {
 
     private ECRHubClient client;
 
+    private String connect_info;
+
     public static ECRHubClientManager getInstance() {
         if (instance == null) {
             instance = new ECRHubClientManager();
@@ -31,5 +33,21 @@ public class ECRHubClientManager {
         }
         client = ECRHubClientFactory.create("sp://");
         return client;
+    }
+
+    public boolean isConnected() {
+        try {
+            return client.isConnected();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String getConnect_info() {
+        return connect_info;
+    }
+
+    public void setConnect_info(String connect_info) {
+        this.connect_info = connect_info;
     }
 }

@@ -7,16 +7,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author: yanzx
@@ -29,13 +24,7 @@ public class JumpController {
 
     public ChoiceBox<String> choiceBox;
 
-    @FXML
-    private Button nextButton;
-
-    private Map<String, Parent> centerMap;
-
     public void initialize() {
-        centerMap = new HashMap<>();
         choiceBox.getItems().addAll("USB", "LAN/WLAN");
         choiceBox.setValue("USB");
         setCenter("/fxml/usb.fxml");
@@ -74,11 +63,6 @@ public class JumpController {
     }
 
     private void setCenter(String path) {
-        if (centerMap.containsKey(path)) {
-            container.setCenter(centerMap.get(path));
-            return;
-        }
-
         URL resource = getClass().getResource(path);
         try {
             FXMLLoader loader = new FXMLLoader(resource);

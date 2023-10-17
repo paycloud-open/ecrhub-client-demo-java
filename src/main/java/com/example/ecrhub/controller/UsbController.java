@@ -1,5 +1,6 @@
 package com.example.ecrhub.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.util.JSONFormatUtil;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
@@ -31,9 +32,17 @@ public class UsbController {
     @FXML
     private VBox wait_vbox;
 
+    public void initialize() {
+        ECRHubClientManager instance = ECRHubClientManager.getInstance();
+        if (instance.isConnected()) {
+            connectButton.setDisable(true);
+            disconnectButton.setDisable(false);
+            connect_info.setText(StrUtil.isEmpty(instance.getConnect_info()) ? "Connected!" : instance.getConnect_info());
+        }
+    }
+
     @FXML
     private void connectButtonAction(ActionEvent event) {
-
         task = new Task<String>() {
             @Override
             protected String call() throws Exception {
@@ -52,6 +61,7 @@ public class UsbController {
 
         task.setOnSucceeded(success -> {
             String response_info = task.getValue();
+            ECRHubClientManager.getInstance().setConnect_info(response_info);
 
             wait_vbox.setVisible(false);
             wait_vbox.setManaged(false);
@@ -104,8 +114,10 @@ public class UsbController {
     @FXML
     private void disconnectButtonAction(ActionEvent event) {
         try {
-            ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+            ECRHubClientManager instance = ECRHubClientManager.getInstance();
+            ECRHubClient client = instance.getClient();
             client.disconnect();
+            instance.setConnect_info(null);
         } catch (Exception e) {
 
         } finally {
