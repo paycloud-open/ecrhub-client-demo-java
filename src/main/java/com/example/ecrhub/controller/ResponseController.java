@@ -41,6 +41,7 @@ public class ResponseController {
 
     @FXML
     private void handleReturnButtonAction(ActionEvent event) {
-        SceneManager.getInstance().switchScene("home");
+        SceneManager.getInstance().loadScene("shopping", "/fxml/shopping.fxml");
+        SceneManager.getInstance().switchScene("shopping");
     }
 }

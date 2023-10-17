@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -14,6 +15,8 @@ import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: yanzx
@@ -29,15 +32,13 @@ public class JumpController {
     @FXML
     private Button nextButton;
 
+    private Map<String, Parent> centerMap;
+
     public void initialize() {
+        centerMap = new HashMap<>();
         choiceBox.getItems().addAll("USB", "LAN/WLAN");
         choiceBox.setValue("USB");
-        URL resource = this.getClass().getResource("/fxml/usb.fxml");
-        try {
-            setCenter(resource);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setCenter("/fxml/usb.fxml");
     }
 
     @FXML
@@ -72,29 +73,29 @@ public class JumpController {
         SceneManager.getInstance().switchScene("shopping");
     }
 
-    private void setCenter(URL url) throws IOException {
-        FXMLLoader loader = new FXMLLoader(url);
-        loader.load();
-        Parent root = loader.getRoot();
-        container.setCenter(root);
+    private void setCenter(String path) {
+        if (centerMap.containsKey(path)) {
+            container.setCenter(centerMap.get(path));
+            return;
+        }
+
+        URL resource = getClass().getResource(path);
+        try {
+            FXMLLoader loader = new FXMLLoader(resource);
+            loader.load();
+            Parent root = loader.getRoot();
+            container.setCenter(root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void toConnect() {
-        URL resource = getClass().getResource("/fxml/connect.fxml");
-        try {
-            setCenter(resource);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setCenter("/fxml/connect.fxml");
     }
 
     public void toUsb() {
-        URL resource = getClass().getResource("/fxml/usb.fxml");
-        try {
-            setCenter(resource);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setCenter("/fxml/usb.fxml");
     }
 
 }
