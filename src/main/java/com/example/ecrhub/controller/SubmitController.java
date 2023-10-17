@@ -3,23 +3,20 @@ package com.example.ecrhub.controller;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.example.ecrhub.constant.CommonConstant;
+import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.manager.PurchaseManager;
 import com.example.ecrhub.manager.SceneManager;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
-import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
-import com.wiseasy.ecr.hub.sdk.ECRHubConfig;
 import com.wiseasy.ecr.hub.sdk.model.request.PurchaseRequest;
-import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 
 /**
@@ -102,7 +99,6 @@ public class SubmitController {
             wait_label.setVisible(false);
             submitButton.setDisable(false);
 
-            disconnectClient();
             alert.setContentText("Connect to ECH Hub error!");
             alert.showAndWait();
         });
@@ -112,8 +108,6 @@ public class SubmitController {
             wait_label.setVisible(false);
             trans_amount.setDisable(false);
             submitButton.setDisable(false);
-
-            disconnectClient();
         });
 
         Thread thread = new Thread(task);
@@ -122,9 +116,7 @@ public class SubmitController {
 
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
-        client = ECRHubClientFactory.create("sp://");
-        ECRHubResponse ecrHubResponse = client.connect2();
-        System.out.println("ECR-HUB Response:" + ecrHubResponse);
+        ECRHubClient client = ECRHubClientManager.getInstance().getClient();
 
         // Purchase
         PurchaseRequest request = new PurchaseRequest();
@@ -136,15 +128,7 @@ public class SubmitController {
         // Execute purchase request
         PurchaseResponse response = client.execute(request);
         System.out.println("Purchase Response:" + response);
-        disconnectClient();
         return response;
     }
 
-    private void disconnectClient() {
-        try {
-            client.disconnect();
-        } catch (Exception e) {
-
-        }
-    }
 }

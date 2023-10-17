@@ -1,10 +1,13 @@
 package com.example.ecrhub.controller;
 
+import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.manager.SceneManager;
+import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
@@ -27,9 +30,9 @@ public class JumpController {
     private Button nextButton;
 
     public void initialize() {
-        choiceBox.getItems().addAll("LAN/WLAN", "USB");
-        choiceBox.setValue("LAN/WLAN");
-        URL resource = this.getClass().getResource("/fxml/connect.fxml");
+        choiceBox.getItems().addAll("USB", "LAN/WLAN");
+        choiceBox.setValue("USB");
+        URL resource = this.getClass().getResource("/fxml/usb.fxml");
         try {
             setCenter(resource);
         } catch (IOException e) {
@@ -43,12 +46,28 @@ public class JumpController {
         if ("LAN/WLAN".equals(value)) {
             toConnect();
         } else {
-            toBlack();
+            toUsb();
         }
     }
 
     @FXML
     private void handleNextButtonAction(ActionEvent event) {
+        if ("USB".equals(choiceBox.getValue())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR!");
+            alert.setContentText("Please connect to ECR-Hub!");
+            try {
+                ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+                if (!client.isConnected()) {
+                    alert.showAndWait();
+                    return;
+                }
+            } catch (Exception e) {
+                alert.showAndWait();
+                return;
+            }
+        }
+
         SceneManager.getInstance().loadScene("shopping", "/fxml/shopping.fxml");
         SceneManager.getInstance().switchScene("shopping");
     }
@@ -69,8 +88,8 @@ public class JumpController {
         }
     }
 
-    public void toBlack() {
-        URL resource = getClass().getResource("/fxml/black.fxml");
+    public void toUsb() {
+        URL resource = getClass().getResource("/fxml/usb.fxml");
         try {
             setCenter(resource);
         } catch (IOException e) {
