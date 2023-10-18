@@ -11,6 +11,15 @@
     </padding>
    <children>
        <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
+           <Label text="Device sn: " />
+           <Label fx:id="terminal_sn" prefHeight="26.0" prefWidth="200.0">
+               <font>
+                   <Font size="20.0" />
+               </font>
+           </Label>
+           <ChoiceBox fx:id="terminalBox" prefWidth="150.0"/>
+       </HBox>
+       <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
            <Label text="Trans Amount: " />
            <Label fx:id="trans_amount" prefHeight="26.0" prefWidth="200.0">
                <font>

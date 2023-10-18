@@ -1,8 +1,12 @@
 package com.example.ecrhub.manager;
 
+import com.example.ecrhub.pojo.ECRHubClientPo;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
 import com.wiseasy.ecr.hub.sdk.exception.ECRHubException;
+import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
+
+import java.util.LinkedHashMap;
 
 /**
  * @author: yanzx
@@ -14,17 +18,36 @@ public class ECRHubClientManager {
     private ECRHubClientManager() {
     }
 
+    // 连接类型 1：USB 2；WLAN
+    private int getConnectType = 1;
+
     private static ECRHubClientManager instance;
 
+    // 串口连接client
     private ECRHubClient client;
 
-    private String connect_info;
+    // 串口连接设备信息
+    private ECRHubResponse connect_info;
+
+    // socket是否开启监听
+    private boolean open_listener = false;
+
+    // socket连接client列表
+    private LinkedHashMap<String, ECRHubClientPo> client_list = new LinkedHashMap<>();
 
     public static ECRHubClientManager getInstance() {
         if (instance == null) {
             instance = new ECRHubClientManager();
         }
         return instance;
+    }
+
+    public int getGetConnectType() {
+        return getConnectType;
+    }
+
+    public void setGetConnectType(int getConnectType) {
+        this.getConnectType = getConnectType;
     }
 
     public ECRHubClient getClient() throws ECRHubException {
@@ -43,11 +66,23 @@ public class ECRHubClientManager {
         }
     }
 
-    public String getConnect_info() {
+    public ECRHubResponse getConnect_info() {
         return connect_info;
     }
 
-    public void setConnect_info(String connect_info) {
+    public void setConnect_info(ECRHubResponse connect_info) {
         this.connect_info = connect_info;
+    }
+
+    public boolean isOpen_listener() {
+        return open_listener;
+    }
+
+    public void setOpen_listener(boolean open_listener) {
+        this.open_listener = open_listener;
+    }
+
+    public LinkedHashMap<String, ECRHubClientPo> getClient_list() {
+        return client_list;
     }
 }

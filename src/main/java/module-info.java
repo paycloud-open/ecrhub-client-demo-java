@@ -10,6 +10,7 @@ module com.example.ecrhub {
     requires org.java_websocket;
     requires org.slf4j;
     requires ecrhub.client.sdk.java;
+    requires javax.jmdns;
 
 
     opens com.example.ecrhub to javafx.fxml;

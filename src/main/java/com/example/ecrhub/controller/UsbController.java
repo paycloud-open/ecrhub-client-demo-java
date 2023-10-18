@@ -1,6 +1,8 @@
 package com.example.ecrhub.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.util.JSONFormatUtil;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
@@ -37,7 +39,7 @@ public class UsbController {
         if (instance.isConnected()) {
             connectButton.setDisable(true);
             disconnectButton.setDisable(false);
-            connect_info.setText(StrUtil.isEmpty(instance.getConnect_info()) ? "Connected!" : instance.getConnect_info());
+            connect_info.setText(instance.getConnect_info() == null ? "Connected!" : JSONFormatUtil.formatJson(instance.getConnect_info()));
         }
     }
 
@@ -55,13 +57,14 @@ public class UsbController {
 
                 ECRHubClient client = ECRHubClientManager.getInstance().getClient();
                 ECRHubResponse ecrHubResponse = client.connect2();
-                return JSONFormatUtil.formatJson(ecrHubResponse);
+                return JSON.toJSONString(ecrHubResponse);
             }
         };
 
         task.setOnSucceeded(success -> {
             String response_info = task.getValue();
-            ECRHubClientManager.getInstance().setConnect_info(response_info);
+            ECRHubResponse ecrHubResponse = JSONObject.parseObject(response_info, ECRHubResponse.class);
+            ECRHubClientManager.getInstance().setConnect_info(ecrHubResponse);
 
             wait_vbox.setVisible(false);
             wait_vbox.setManaged(false);

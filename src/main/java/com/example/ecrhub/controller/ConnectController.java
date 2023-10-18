@@ -1,11 +1,22 @@
 package com.example.ecrhub.controller;
 
+import cn.hutool.core.util.StrUtil;
+import com.example.ecrhub.manager.ECRHubClientManager;
+import com.example.ecrhub.pojo.ECRHubClientPo;
+import com.example.ecrhub.util.ConfirmWindow;
+import com.wiseasy.ecr.hub.sdk.ECRHubClient;
+import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
+import com.wiseasy.ecr.hub.sdk.device.ECRHubDevice;
+import com.wiseasy.ecr.hub.sdk.device.ECRHubDeviceManage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @author: yanzx
@@ -15,53 +26,171 @@ import javafx.scene.paint.Color;
 public class ConnectController {
 
     @FXML
+    private Button listenerButton;
+
+    @FXML
+    private Button connectButton;
+
+    @FXML
     ListView<String> listView;
 
+    private String selected_device;
+
     public void initialize() {
+        ECRHubClientManager instance = ECRHubClientManager.getInstance();
+        connectButton.setDisable(true);
+        if (instance.isOpen_listener()) {
+            // 已连接
+            listenerButton.setText("Disable Listening");
+        } else {
+            // 未连接
+            listenerButton.setText("Enable Listening");
+        }
         getConnectInfo();
     }
 
     @FXML
-    protected void onRefreshAction() {
+    protected void onListenerAction() {
+        ECRHubDeviceManage devicePairInstance = ECRHubDeviceManage.getInstance();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR!");
+        if ("Enable Listening".equals(listenerButton.getText())) {
+            // 开启监听
+            try {
+                devicePairInstance.start();
+                devicePairInstance.setDeviceEventListener(new ECRHubDeviceManage.DeviceEventListener() {
+                    @Override
+                    public void onAdded(ECRHubDevice ecrHubDevice) {
+
+                    }
+
+                    @Override
+                    public boolean onPaired(ECRHubDevice ecrHubDevice) {
+                        String terminal_sn = ecrHubDevice.getTerminal_sn();
+                        String content = "Device sn: \n    [" + terminal_sn + "]\n request connection";
+                        boolean is_confirm = new ConfirmWindow().open("Connection confirmed",content);
+                        if (is_confirm) {
+                            try {
+                                ECRHubClient socketPortClient = ECRHubClientFactory.create(ecrHubDevice.getWs_address());
+                                socketPortClient.connect();
+                                ECRHubClientPo clientPo = new ECRHubClientPo();
+                                clientPo.setIs_connected(true);
+                                clientPo.setDevice(ecrHubDevice);
+                                clientPo.setClient(socketPortClient);
+                                ECRHubClientManager.getInstance().getClient_list().put(terminal_sn, clientPo);
+                                getConnectInfo();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                alert.setContentText("Connect to ECR-Hub error!");
+                                alert.showAndWait();
+                                return false;
+                            }
+                        }
+                        return is_confirm;
+                    }
+
+                    @Override
+                    public void onRemoved(ECRHubDevice ecrHubDevice) {
+
+                    }
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                alert.setContentText("Enable Listening error!");
+                alert.showAndWait();
+                return;
+            }
+
+            ECRHubClientManager.getInstance().setOpen_listener(true);
+            listenerButton.setText("Disable Listening");
+        } else {
+            try {
+                devicePairInstance.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                ECRHubClientManager.getInstance().setOpen_listener(false);
+                listenerButton.setText("Enable Listening");
+            }
+        }
+        getConnectInfo();
+    }
+
+    @FXML
+    protected void onDisconnectAction() {
+        LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
+        if (StrUtil.isEmpty(selected_device) || !client_list.containsKey(selected_device)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR!");
+            alert.setContentText("Device information does not exist!");
+            alert.showAndWait();
+            return;
+        }
+
+        String terminal_sn = selected_device.split("-")[0].trim();
+        ECRHubClientPo clientPo = client_list.get(terminal_sn);
+        ECRHubClient client = clientPo.getClient();
+        if ("Disconnect".equals(connectButton.getText())) {
+            try {
+                client.disconnect();
+                clientPo.setIs_connected(false);
+                client_list.put(terminal_sn, clientPo);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                client.connect();
+                clientPo.setIs_connected(true);
+                client_list.put(terminal_sn, clientPo);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         getConnectInfo();
     }
 
     private void getConnectInfo() {
-        // TODO 查询设备连接情况
-        ObservableList<String> updatedDevices = FXCollections.observableArrayList(
-                "设备1 - 已连接",
-                "设备2 - 未连接",
-                "设备3 - 未连接",
-                "设备4 - 未连接",
-                "设备5 - 未连接"
-        );
-        listView.setItems(updatedDevices);
+        // 查询设备连接情况
+        LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
+        List<String> device_info = new ArrayList<>();
+        for (String key : client_list.keySet()) {
+            ECRHubClientPo clientPo = client_list.get(key);
+            device_info.add(key + " - " + (clientPo.isIs_connected() ? "Connected" : "Unconnected"));
+        }
+        ObservableList connectDevices = FXCollections.observableArrayList(device_info);
+        listView.setItems(connectDevices);
 
         // 渲染
-        listView.setCellFactory(list -> {
-            ListCell<String> cell = new ListCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        // There is no item to display in this cell, so leave it empty
-                        setGraphic(null);
-
-                        // Clear the style from the cell
-                        setStyle(null);
+        listView.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!empty && StrUtil.isNotEmpty(item)) {
+                    if (item.contains("Unconnected")) {
+                        setTextFill(Color.RED);
                     } else {
-                        // If the item is equal to the first item in the list, set the style
-                        if (item.contains("已连接")) {
-                            // Set the background color to blue
-                            setTextFill(Color.GREEN);
-                        }
-                        // Finally, show the item text in the cell
-                        setText(item);
-
+                        setTextFill(Color.GREEN);
                     }
+                    setText(item);
                 }
-            };
-            return cell;
+            }
+        });
+
+        // 选中事件
+        listView.getSelectionModel().selectedItemProperty().addListener((arg0, old_str, new_str) -> {
+            // getSelectedIndex方法可获得选中项的序号，getSelectedItem方法可获得选中项的对象
+//            String desc = String.format("您点了第%d项，快餐名称是%s",
+//                    listView.getSelectionModel().getSelectedIndex(),
+//                    listView.getSelectionModel().getSelectedItem());
+            selected_device = listView.getSelectionModel().getSelectedItem();
+            connectButton.setDisable(false);
+            if (selected_device.contains("Unconnected")) {
+                connectButton.setText("Connect");
+            } else {
+                connectButton.setText("Disconnect");
+            }
         });
     }
 

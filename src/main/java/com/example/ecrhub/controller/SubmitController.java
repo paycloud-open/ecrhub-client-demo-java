@@ -6,18 +6,17 @@ import com.example.ecrhub.constant.CommonConstant;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.manager.PurchaseManager;
 import com.example.ecrhub.manager.SceneManager;
+import com.example.ecrhub.pojo.ECRHubClientPo;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.model.request.PurchaseRequest;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 /**
  * @author: yanzx
@@ -40,9 +39,31 @@ public class SubmitController {
     @FXML
     private Label trans_amount;
 
-    ECRHubClient client = null;
+    @FXML
+    private Label terminal_sn;
+
+    public ChoiceBox<String> terminalBox;
 
     public void initialize() {
+        ECRHubClientManager instance = ECRHubClientManager.getInstance();
+        if (1 == instance.getGetConnectType()) {
+            // 串口连接初始化页面
+            terminal_sn.setText(instance.getConnect_info().getDevice_data().getDevice_sn());
+            terminalBox.setVisible(false);
+            terminalBox.setManaged(false);
+        } else {
+            // WLAN 连接初始化页面
+            LinkedHashMap<String, ECRHubClientPo> client_list = instance.getClient_list();
+            for (String key: client_list.keySet()) {
+                ECRHubClientPo client_info = client_list.get(key);
+                if (client_info.isIs_connected()) {
+                    terminalBox.getItems().add(key);
+                }
+            }
+            terminalBox.setValue(terminalBox.getItems().get(0));
+            terminal_sn.setVisible(false);
+            terminal_sn.setManaged(false);
+        }
         progress_indicator.setDisable(true);
         progress_indicator.setVisible(false);
         wait_label.setVisible(false);
@@ -116,7 +137,15 @@ public class SubmitController {
 
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
-        ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+        ECRHubClientManager instance = ECRHubClientManager.getInstance();
+        // 设备选择
+        ECRHubClient client;
+        if (1 == instance.getGetConnectType()) {
+            client = instance.getClient();
+        } else {
+            LinkedHashMap<String, ECRHubClientPo> client_list = instance.getClient_list();
+            client = client_list.get(terminalBox.getValue()).getClient();
+        }
 
         // Purchase
         PurchaseRequest request = new PurchaseRequest();
