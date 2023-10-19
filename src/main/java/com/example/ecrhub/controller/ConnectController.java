@@ -8,6 +8,7 @@ import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
 import com.wiseasy.ecr.hub.sdk.device.ECRHubDevice;
 import com.wiseasy.ecr.hub.sdk.device.ECRHubDeviceManage;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -81,8 +82,10 @@ public class ConnectController {
                                 getConnectInfo();
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                alert.setContentText("Connect to ECR-Hub error!");
-                                alert.showAndWait();
+                                Platform.runLater(() -> {
+                                    alert.setContentText("Connect to ECR-Hub error!");
+                                    alert.showAndWait();
+                                });
                                 return false;
                             }
                         }
@@ -120,7 +123,8 @@ public class ConnectController {
     @FXML
     protected void onDisconnectAction() {
         LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
-        if (StrUtil.isEmpty(selected_device) || !client_list.containsKey(selected_device)) {
+        String terminal_sn = StrUtil.isEmpty(selected_device) ? "null" : selected_device.split("-")[0].trim();
+        if (!client_list.containsKey(terminal_sn)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERROR!");
             alert.setContentText("Device information does not exist!");
@@ -128,7 +132,6 @@ public class ConnectController {
             return;
         }
 
-        String terminal_sn = selected_device.split("-")[0].trim();
         ECRHubClientPo clientPo = client_list.get(terminal_sn);
         ECRHubClient client = clientPo.getClient();
         if ("Disconnect".equals(connectButton.getText())) {
@@ -141,8 +144,10 @@ public class ConnectController {
             }
         } else {
             try {
+                client = ECRHubClientFactory.create(clientPo.getDevice().getWs_address());
                 client.connect();
                 clientPo.setIs_connected(true);
+                clientPo.setClient(client);
                 client_list.put(terminal_sn, clientPo);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -178,6 +183,8 @@ public class ConnectController {
             }
         });
 
+        listView.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
         // 选中事件
         listView.getSelectionModel().selectedItemProperty().addListener((arg0, old_str, new_str) -> {
             // getSelectedIndex方法可获得选中项的序号，getSelectedItem方法可获得选中项的对象
@@ -185,11 +192,15 @@ public class ConnectController {
 //                    listView.getSelectionModel().getSelectedIndex(),
 //                    listView.getSelectionModel().getSelectedItem());
             selected_device = listView.getSelectionModel().getSelectedItem();
-            connectButton.setDisable(false);
-            if (selected_device.contains("Unconnected")) {
-                connectButton.setText("Connect");
+            if (StrUtil.isNotEmpty(selected_device)) {
+                connectButton.setDisable(false);
+                if (selected_device.contains("Unconnected")) {
+                    connectButton.setText("Connect");
+                } else {
+                    connectButton.setText("Disconnect");
+                }
             } else {
-                connectButton.setText("Disconnect");
+                connectButton.setDisable(true);
             }
         });
     }
