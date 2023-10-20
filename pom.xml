@@ -135,29 +135,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- javapackager  -->
-            <plugin>
-                <groupId>io.github.fvarrui</groupId>
-                <artifactId>javapackager</artifactId>
-                <version>1.6.7</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                        <configuration>
-
-                            <mainClass>com.example.ecrhub.ExecuteMain</mainClass>
-
-                            <bundleJre>true</bundleJre>
-                            <generateInstaller>false</generateInstaller>
-                            <administratorRequired>false</administratorRequired>
-                            <platform>windows</platform>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>
