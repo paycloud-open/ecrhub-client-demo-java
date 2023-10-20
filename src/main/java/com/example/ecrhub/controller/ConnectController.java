@@ -6,8 +6,9 @@ import com.example.ecrhub.pojo.ECRHubClientPo;
 import com.example.ecrhub.util.ConfirmWindow;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
+import com.wiseasy.ecr.hub.sdk.device.ECRHubClientWebSocketService;
 import com.wiseasy.ecr.hub.sdk.device.ECRHubDevice;
-import com.wiseasy.ecr.hub.sdk.device.ECRHubDeviceManage;
+import com.wiseasy.ecr.hub.sdk.device.ECRHubDeviceEventListener;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -52,17 +53,32 @@ public class ConnectController {
 
     @FXML
     protected void onListenerAction() {
-        ECRHubDeviceManage devicePairInstance = ECRHubDeviceManage.getInstance();
+        ECRHubClientWebSocketService devicePairInstance = ECRHubClientWebSocketService.getInstance();
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("ERROR!");
         if ("Enable Listening".equals(listenerButton.getText())) {
             // 开启监听
             try {
                 devicePairInstance.start();
-                devicePairInstance.setDeviceEventListener(new ECRHubDeviceManage.DeviceEventListener() {
+                devicePairInstance.setDeviceEventListener(new ECRHubDeviceEventListener() {
                     @Override
                     public void onAdded(ECRHubDevice ecrHubDevice) {
-
+                        String terminal_sn = ecrHubDevice.getTerminal_sn();
+                        ECRHubClientPo clientPo = new ECRHubClientPo();
+                        clientPo.setIs_connected(false);
+                        clientPo.setDevice(ecrHubDevice);
+                        try {
+                            ECRHubClient socketPortClient = ECRHubClientFactory.create(ecrHubDevice.getWs_address());
+                            socketPortClient.connect();
+                            clientPo.setIs_connected(true);
+                            clientPo.setClient(socketPortClient);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        ECRHubClientManager.getInstance().getClient_list().put(terminal_sn, clientPo);
+                        Platform.runLater(() -> {
+                            getConnectInfo();
+                        });
                     }
 
                     @Override
@@ -90,6 +106,11 @@ public class ConnectController {
                             }
                         }
                         return is_confirm;
+                    }
+
+                    @Override
+                    public void unPaired(ECRHubDevice ecrHubDevice) {
+
                     }
 
                     @Override
