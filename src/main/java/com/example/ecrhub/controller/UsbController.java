@@ -73,7 +73,7 @@ public class UsbController {
 
             connectButton.setDisable(true);
             disconnectButton.setDisable(false);
-            connect_info.setText(response_info);
+            connect_info.setText(JSONFormatUtil.formatJson(ecrHubResponse));
         });
 
         task.setOnFailed(fail -> {
