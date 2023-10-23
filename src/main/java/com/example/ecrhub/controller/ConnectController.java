@@ -48,16 +48,24 @@ public class ConnectController {
     @FXML
     private Button pairedButton;
 
+    @FXML
+    private Button unpairedButton;
+
     private String selected_device;
 
     private String pairing_device;
 
     List<ECRHubDevice> unpaired_list;
 
-    private Task<String> task = null;
+    private Task<String> pairing_task = null;
+
+    private Task<String> unpairing_task = null;
 
     @FXML
-    private VBox wait_vbox;
+    private VBox pairing_wait_vbox;
+
+    @FXML
+    private VBox unpairing_wait_vbox;
 
     public void initialize() {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
@@ -246,14 +254,14 @@ public class ConnectController {
             return;
         }
 
-        task = new Task<String>() {
+        pairing_task = new Task<String>() {
             @Override
             protected String call() throws Exception {
                 refreshButton.setDisable(true);
                 pairedButton.setDisable(true);
 
-                wait_vbox.setVisible(true);
-                wait_vbox.setManaged(true);
+                pairing_wait_vbox.setVisible(true);
+                pairing_wait_vbox.setManaged(true);
                 unPairedList.setVisible(false);
                 unPairedList.setManaged(false);
 
@@ -267,12 +275,12 @@ public class ConnectController {
             }
         };
 
-        task.setOnSucceeded(success -> {
-            String response_info = task.getValue();
+        pairing_task.setOnSucceeded(success -> {
+            String response_info = pairing_task.getValue();
             ECRHubClientPo clientPo = JSONObject.parseObject(response_info, ECRHubClientPo.class);
 
-            wait_vbox.setVisible(false);
-            wait_vbox.setManaged(false);
+            pairing_wait_vbox.setVisible(false);
+            pairing_wait_vbox.setManaged(false);
             unPairedList.setVisible(true);
             unPairedList.setManaged(true);
 
@@ -282,18 +290,18 @@ public class ConnectController {
             getUnpairedInfo();
         });
 
-        task.setOnFailed(fail -> {
-            wait_vbox.setVisible(false);
-            wait_vbox.setManaged(false);
+        pairing_task.setOnFailed(fail -> {
+            pairing_wait_vbox.setVisible(false);
+            pairing_wait_vbox.setManaged(false);
             unPairedList.setVisible(true);
             unPairedList.setManaged(true);
 
             refreshButton.setDisable(false);
         });
 
-        task.setOnCancelled(cancel -> {
-            wait_vbox.setVisible(false);
-            wait_vbox.setManaged(false);
+        pairing_task.setOnCancelled(cancel -> {
+            pairing_wait_vbox.setVisible(false);
+            pairing_wait_vbox.setManaged(false);
             unPairedList.setVisible(true);
             unPairedList.setManaged(true);
 
@@ -312,14 +320,86 @@ public class ConnectController {
             refreshButton.setDisable(false);
         });
 
-        Thread thread = new Thread(task);
+        Thread thread = new Thread(pairing_task);
         thread.start();
     }
 
     @FXML
-    private void cancelAction(ActionEvent event) {
-        if (task != null && task.isRunning()) {
-            task.cancel();
+    private void pairingCancelAction(ActionEvent event) {
+        if (pairing_task != null && pairing_task.isRunning()) {
+            pairing_task.cancel();
+        }
+    }
+
+    @FXML
+    private void unpairingButtonAction() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR!");
+        alert.setContentText("Paired device information does not exist!");
+
+        LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
+        if (StrUtil.isEmpty(selected_device) || !client_list.containsKey(selected_device)) {
+            alert.showAndWait();
+            return;
+        }
+
+        ECRHubClientPo clientPo = client_list.get(selected_device);
+
+        unpairing_task = new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                connectButton.setDisable(true);
+                unpairedButton.setDisable(true);
+
+                unpairing_wait_vbox.setVisible(true);
+                unpairing_wait_vbox.setManaged(true);
+                pairedList.setVisible(false);
+                pairedList.setManaged(false);
+
+                ECRHubClientWebSocketService devicePairInstance = ECRHubClientWebSocketService.getInstance();
+                devicePairInstance.unpair(clientPo.getDevice());
+                return null;
+            }
+        };
+
+        unpairing_task.setOnSucceeded(success -> {
+            unpairing_wait_vbox.setVisible(false);
+            unpairing_wait_vbox.setManaged(false);
+            pairedList.setVisible(true);
+            pairedList.setManaged(true);
+
+            connectButton.setDisable(true);
+            client_list.remove(selected_device);
+            getConnectInfo();
+            getUnpairedInfo();
+        });
+
+        unpairing_task.setOnFailed(fail -> {
+            unpairing_wait_vbox.setVisible(false);
+            unpairing_wait_vbox.setManaged(false);
+            pairedList.setVisible(true);
+            pairedList.setManaged(true);
+
+            connectButton.setDisable(false);
+        });
+
+        unpairing_task.setOnCancelled(cancel -> {
+            unpairing_wait_vbox.setVisible(false);
+            unpairing_wait_vbox.setManaged(false);
+            pairedList.setVisible(true);
+            pairedList.setManaged(true);
+
+            connectButton.setDisable(false);
+        });
+
+        Thread thread = new Thread(unpairing_task);
+        thread.start();
+    }
+
+    @FXML
+    private void unpairingCancelAction(ActionEvent event) {
+        if (unpairing_task != null && unpairing_task.isRunning()) {
+            unpairing_task.cancel();
         }
     }
 
@@ -362,8 +442,10 @@ public class ConnectController {
             if (StrUtil.isNotEmpty(selected_device)) {
                 connectButton.setDisable(false);
                 if (selected_device.contains("Unconnected")) {
+                    unpairedButton.setDisable(true);
                     connectButton.setText("Connect");
                 } else {
+                    unpairedButton.setDisable(false);
                     connectButton.setText("Disconnect");
                 }
             } else {
