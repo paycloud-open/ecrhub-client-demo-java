@@ -38,7 +38,7 @@ public class ResponseController {
 
     @FXML
     private void handleReturnButtonAction(ActionEvent event) {
-        SceneManager.getInstance().loadScene("shopping", "/fxml/shopping.fxml");
+        SceneManager.getInstance().loadScene("shopping", "/com/example/ecrhub/fxml/shopping.fxml");
         SceneManager.getInstance().switchScene("shopping");
     }
 }

@@ -111,7 +111,7 @@ public class SubmitController {
         };
 
         task.setOnSucceeded(success -> {
-            SceneManager.getInstance().loadScene("response", "/fxml/response.fxml");
+            SceneManager.getInstance().loadScene("response", "/com/example/ecrhub/fxml/response.fxml");
             SceneManager.getInstance().switchScene("response");
         });
 

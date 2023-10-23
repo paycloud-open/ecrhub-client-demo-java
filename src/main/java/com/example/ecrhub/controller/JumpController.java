@@ -29,7 +29,7 @@ public class JumpController {
     public void initialize() {
         choiceBox.getItems().addAll("USB", "LAN/WLAN");
         choiceBox.setValue("USB");
-        setCenter("/fxml/usb.fxml");
+        setCenter("/com/example/ecrhub/fxml/usb.fxml");
     }
 
     @FXML
@@ -84,7 +84,7 @@ public class JumpController {
         }
 
         ECRHubClientManager.getInstance().setGetConnectType(connect_type);
-        SceneManager.getInstance().loadScene("shopping", "/fxml/shopping.fxml");
+        SceneManager.getInstance().loadScene("shopping", "/com/example/ecrhub/fxml/shopping.fxml");
         SceneManager.getInstance().switchScene("shopping");
     }
 
@@ -101,11 +101,11 @@ public class JumpController {
     }
 
     public void toConnect() {
-        setCenter("/fxml/connect.fxml");
+        setCenter("/com/example/ecrhub/fxml/connect.fxml");
     }
 
     public void toUsb() {
-        setCenter("/fxml/usb.fxml");
+        setCenter("/com/example/ecrhub/fxml/usb.fxml");
     }
 
 }

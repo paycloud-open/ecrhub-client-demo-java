@@ -58,7 +58,7 @@ public class ShoppingController {
             String productPrice = product[1];
 
             // 商品图标，替换成实际商品图片的路径
-            Image productImage = new Image(ShoppingController.class.getResourceAsStream("/image/" + productName + ".png"));
+            Image productImage = new Image(ShoppingController.class.getResourceAsStream("/com/example/ecrhub/image/" + productName + ".png"));
             ImageView imageView = new ImageView(productImage);
             imageView.setFitWidth(100);
             imageView.setFitHeight(100);
@@ -102,7 +102,7 @@ public class ShoppingController {
 
     @FXML
     private void handleReturnButtonAction(ActionEvent event) {
-        SceneManager.getInstance().loadScene("home", "/fxml/home.fxml");
+        SceneManager.getInstance().loadScene("home", "/com/example/ecrhub/fxml/home.fxml");
         SceneManager.getInstance().switchScene("home");
     }
 
@@ -115,7 +115,7 @@ public class ShoppingController {
             alert.showAndWait();
             return;
         }
-        SceneManager.getInstance().loadScene("submit", "/fxml/submit.fxml");
+        SceneManager.getInstance().loadScene("submit", "/com/example/ecrhub/fxml/submit.fxml");
         SceneManager.getInstance().switchScene("submit");
     }
 }

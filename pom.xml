@@ -135,6 +135,72 @@
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-assembly-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <appendAssemblyId>false</appendAssemblyId>-->
+<!--                    <descriptorRefs>-->
+<!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--                    </descriptorRefs>-->
+<!--                    <archive>-->
+<!--                        <manifest>-->
+<!--                            <mainClass>com.example.ecrhub.ECRHubStart</mainClass>-->
+<!--                        </manifest>-->
+<!--                    </archive>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>make-assembly</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>single</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <transformers>
+                                <transformer implementation=
+                                                     "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.example.ecrhub.ECRHubStart</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <!--将fxml文件放在src/main/resources-->
+                <!--fxml文件放在那里就写那里的路径，路径不对就找不到fxml文件-->
+                <directory>src/main/resources</directory>
+                <includes>
+                    <!--需要显示的资源需要在这里设置过滤-->
+                    <include>**/*.fxml</include>
+                    <include>**/*.css</include>
+                    <include>**/*.png</include>
+                    <include>**.xml</include>
+                    <!-- 如果想要弄个包名专门放fxml文件，像上一行这样添加设置 -->
+                    <!-- 之后，使用getResource("fxml/xx.fxml")这样子 -->
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>lib</directory>
+                <includes>
+                    <include>**.jar</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>
