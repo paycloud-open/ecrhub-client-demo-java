@@ -1,5 +1,6 @@
 package com.example.ecrhub.controller;
 
+import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.manager.PurchaseManager;
 import com.example.ecrhub.manager.SceneManager;
 import javafx.event.ActionEvent;
@@ -101,20 +102,27 @@ public class ShoppingController {
     }
 
     @FXML
-    private void handleReturnButtonAction(ActionEvent event) {
-        SceneManager.getInstance().loadScene("home", "/com/example/ecrhub/fxml/home.fxml");
+    private void handleSettingButtonAction(ActionEvent event) {
+        SceneManager.getInstance().loadScene("home", "/com/example/ecrhub/fxml/setting.fxml");
         SceneManager.getInstance().switchScene("home");
     }
 
     @FXML
     private void handleNextButtonAction(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR!");
         if ("$0".equals(amount.getText())) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR!");
             alert.setContentText("Please select product!");
             alert.showAndWait();
             return;
         }
+
+        if (0 == ECRHubClientManager.getInstance().getConnectType()) {
+            alert.setContentText("Please connect the device!");
+            alert.showAndWait();
+            return;
+        }
+
         SceneManager.getInstance().loadScene("submit", "/com/example/ecrhub/fxml/submit.fxml");
         SceneManager.getInstance().switchScene("submit");
     }

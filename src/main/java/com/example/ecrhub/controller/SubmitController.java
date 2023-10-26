@@ -46,7 +46,7 @@ public class SubmitController {
 
     public void initialize() {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
-        if (1 == instance.getGetConnectType()) {
+        if (1 == instance.getConnectType()) {
             // 串口连接初始化页面
             terminal_sn.setText(instance.getConnect_info().getDevice_data().getDevice_sn());
             terminalBox.setVisible(false);
@@ -140,7 +140,7 @@ public class SubmitController {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
         // 设备选择
         ECRHubClient client;
-        if (1 == instance.getGetConnectType()) {
+        if (1 == instance.getConnectType()) {
             client = instance.getClient();
         } else {
             LinkedHashMap<String, ECRHubClientPo> client_list = instance.getClient_list();

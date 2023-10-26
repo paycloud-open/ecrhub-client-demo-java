@@ -18,8 +18,8 @@ public class ECRHubClientManager {
     private ECRHubClientManager() {
     }
 
-    // 连接类型 1：USB 2；WLAN
-    private int getConnectType = 1;
+    // 连接类型 0；NONE 1：USB 2；WLAN
+    private int connectType = 0;
 
     private static ECRHubClientManager instance;
 
@@ -42,12 +42,12 @@ public class ECRHubClientManager {
         return instance;
     }
 
-    public int getGetConnectType() {
-        return getConnectType;
+    public int getConnectType() {
+        return connectType;
     }
 
-    public void setGetConnectType(int getConnectType) {
-        this.getConnectType = getConnectType;
+    public void setConnectType(int connectType) {
+        this.connectType = connectType;
     }
 
     public ECRHubClient getClient() throws ECRHubException {

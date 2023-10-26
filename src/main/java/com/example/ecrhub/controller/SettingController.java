@@ -8,7 +8,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
 
@@ -20,7 +19,7 @@ import java.util.LinkedHashMap;
  * @date: 2023/10/11 10:08
  * @description:
  */
-public class JumpController {
+public class SettingController {
 
     public BorderPane container;
 
@@ -43,47 +42,37 @@ public class JumpController {
     }
 
     @FXML
-    private void handleNextButtonAction(ActionEvent event) {
+    private void handleBackButtonAction(ActionEvent event) {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
-        int connect_type = 1;
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("ERROR!");
-        alert.setContentText("Please connect to ECR-Hub!");
+        int connect_type = 0;
         if ("USB".equals(choiceBox.getValue())) {
             // 串口连接
             try {
                 ECRHubClient client = instance.getClient();
-                if (!client.isConnected()) {
-                    alert.showAndWait();
-                    return;
+                if (client.isConnected()) {
+                    connect_type = 1;
                 }
             } catch (Exception e) {
-                alert.showAndWait();
-                return;
             }
         } else {
             // WLAN连接
-            if (instance.getClient_list().isEmpty()) {
-                alert.showAndWait();
-                return;
-            }
             boolean all_disconnect = true;
             LinkedHashMap<String, ECRHubClientPo> client_list = instance.getClient_list();
-            for (String key: client_list.keySet()) {
-                ECRHubClientPo client_info = client_list.get(key);
-                if (client_info.isIs_connected()) {
-                    all_disconnect = false;
-                    break;
+            if (!client_list.isEmpty()) {
+                for (String key : client_list.keySet()) {
+                    ECRHubClientPo client_info = client_list.get(key);
+                    if (client_info.isIs_connected()) {
+                        all_disconnect = false;
+                        break;
+                    }
+                }
+                if (!all_disconnect) {
+                    connect_type = 2;
                 }
             }
-            if (all_disconnect) {
-                alert.showAndWait();
-                return;
-            }
-            connect_type = 2;
         }
 
-        ECRHubClientManager.getInstance().setGetConnectType(connect_type);
+        instance.setConnectType(connect_type);
         SceneManager.getInstance().loadScene("shopping", "/com/example/ecrhub/fxml/shopping.fxml");
         SceneManager.getInstance().switchScene("shopping");
     }
