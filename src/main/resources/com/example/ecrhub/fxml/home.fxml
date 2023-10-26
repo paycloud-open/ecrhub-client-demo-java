@@ -9,7 +9,7 @@
         <top>
             <HBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
                 <children>
-               <Label text="Push Method: " />
+               <Label text="Connect Mode: " />
                <ChoiceBox fx:id="choiceBox" onAction="#onChoiceBoxChange" prefWidth="150.0" />
                 </children>
                 <padding>

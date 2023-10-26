@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.pojo.ECRHubClientPo;
 import com.example.ecrhub.util.ConfirmWindow;
+import com.example.ecrhub.util.SwitchButton;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
 import com.wiseasy.ecr.hub.sdk.device.ECRHubClientWebSocketService;
@@ -17,11 +18,17 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @author: yanzx
@@ -29,9 +36,6 @@ import java.util.*;
  * @description:
  */
 public class ConnectController {
-
-    @FXML
-    private Button listenerButton;
 
     @FXML
     private Button connectButton;
@@ -67,129 +71,144 @@ public class ConnectController {
     @FXML
     private VBox unpairing_wait_vbox;
 
+    @FXML
+    private HBox switch_hbox;
+
     public void initialize() {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
+        SwitchButton switch_button = new SwitchButton(instance.isOpen_listener()) {
+            @Override
+            public boolean buttonOffAction() {
+                return closeListenerAction();
+            }
+
+            @Override
+            public boolean buttonOnAction() {
+                return openListenerAction();
+            }
+        };
+        switch_hbox.getChildren().add(switch_button);
+
         connectButton.setDisable(true);
         if (instance.isOpen_listener()) {
             // 已连接
-            listenerButton.setText("Disable Listening");
             refreshButton.setDisable(false);
             getUnpairedInfo();
         } else {
             // 未连接
-            listenerButton.setText("Enable Listening");
             refreshButton.setDisable(true);
         }
         getConnectInfo();
     }
 
-    @FXML
-    protected void onListenerAction() {
+    private boolean openListenerAction() {
         ECRHubClientWebSocketService devicePairInstance = ECRHubClientWebSocketService.getInstance();
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("ERROR!");
-        if ("Enable Listening".equals(listenerButton.getText())) {
-            // 开启监听
-            try {
-                devicePairInstance.start();
-                // 查询已配对/未配对设备
-                getUnpairedInfo();
-                getPairedInfo(devicePairInstance);
-                devicePairInstance.setDeviceEventListener(new ECRHubDeviceEventListener() {
-                    @Override
-                    public void onAdded(ECRHubDevice ecrHubDevice) {
-                        LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
-                        String terminal_sn = ecrHubDevice.getTerminal_sn();
-                        if (client_list.containsKey(terminal_sn) && !client_list.get(terminal_sn).isIs_connected()) {
+        // 开启监听
+        try {
+            devicePairInstance.start();
+            // 查询已配对/未配对设备
+            getUnpairedInfo();
+            getPairedInfo(devicePairInstance);
+            devicePairInstance.setDeviceEventListener(new ECRHubDeviceEventListener() {
+                @Override
+                public void onAdded(ECRHubDevice ecrHubDevice) {
+                    LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
+                    String terminal_sn = ecrHubDevice.getTerminal_sn();
+                    if (client_list.containsKey(terminal_sn) && !client_list.get(terminal_sn).isIs_connected()) {
+                        ECRHubClientPo clientPo = new ECRHubClientPo();
+                        clientPo.setIs_connected(false);
+                        clientPo.setDevice(ecrHubDevice);
+                        try {
+                            ECRHubClient socketPortClient = ECRHubClientFactory.create(ecrHubDevice.getWs_address());
+                            socketPortClient.connect();
+                            clientPo.setIs_connected(true);
+                            clientPo.setClient(socketPortClient);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        client_list.put(terminal_sn, clientPo);
+                        Platform.runLater(() -> {
+                            getConnectInfo();
+                        });
+                    }
+                }
+
+                @Override
+                public boolean onPaired(ECRHubDevice ecrHubDevice) {
+                    String terminal_sn = ecrHubDevice.getTerminal_sn();
+                    String content = "Device sn: \n    [" + terminal_sn + "]\n request connection";
+                    boolean is_confirm = new ConfirmWindow().open("Connection confirmed", content);
+                    if (is_confirm) {
+                        try {
+                            ECRHubClient socketPortClient = ECRHubClientFactory.create(ecrHubDevice.getWs_address());
+                            socketPortClient.connect();
                             ECRHubClientPo clientPo = new ECRHubClientPo();
-                            clientPo.setIs_connected(false);
+                            clientPo.setIs_connected(true);
                             clientPo.setDevice(ecrHubDevice);
-                            try {
-                                ECRHubClient socketPortClient = ECRHubClientFactory.create(ecrHubDevice.getWs_address());
-                                socketPortClient.connect();
-                                clientPo.setIs_connected(true);
-                                clientPo.setClient(socketPortClient);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            client_list.put(terminal_sn, clientPo);
+                            clientPo.setClient(socketPortClient);
+                            ECRHubClientManager.getInstance().getClient_list().put(terminal_sn, clientPo);
+                            getConnectInfo();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                             Platform.runLater(() -> {
-                                getConnectInfo();
+                                alert.setContentText("Connect to ECR-Hub error!");
+                                alert.showAndWait();
                             });
+                            return false;
                         }
                     }
+                    return is_confirm;
+                }
 
-                    @Override
-                    public boolean onPaired(ECRHubDevice ecrHubDevice) {
-                        String terminal_sn = ecrHubDevice.getTerminal_sn();
-                        String content = "Device sn: \n    [" + terminal_sn + "]\n request connection";
-                        boolean is_confirm = new ConfirmWindow().open("Connection confirmed",content);
-                        if (is_confirm) {
-                            try {
-                                ECRHubClient socketPortClient = ECRHubClientFactory.create(ecrHubDevice.getWs_address());
-                                socketPortClient.connect();
-                                ECRHubClientPo clientPo = new ECRHubClientPo();
-                                clientPo.setIs_connected(true);
-                                clientPo.setDevice(ecrHubDevice);
-                                clientPo.setClient(socketPortClient);
-                                ECRHubClientManager.getInstance().getClient_list().put(terminal_sn, clientPo);
-                                getConnectInfo();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Platform.runLater(() -> {
-                                    alert.setContentText("Connect to ECR-Hub error!");
-                                    alert.showAndWait();
-                                });
-                                return false;
-                            }
-                        }
-                        return is_confirm;
-                    }
+                @Override
+                public void onUnpaired(ECRHubDevice ecrHubDevice) {
+                    String terminal_sn = ecrHubDevice.getTerminal_sn();
+                    ECRHubClientManager.getInstance().getClient_list().remove(terminal_sn);
+                    getConnectInfo();
+                }
 
-                    @Override
-                    public void onUnpaired(ECRHubDevice ecrHubDevice) {
-                        String terminal_sn = ecrHubDevice.getTerminal_sn();
-                        ECRHubClientManager.getInstance().getClient_list().remove(terminal_sn);
-                        getConnectInfo();
-                    }
-
-                    @Override
-                    public void onRemoved(ECRHubDevice ecrHubDevice) {
-                        String terminal_sn = ecrHubDevice.getTerminal_sn();
-                        LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
-                        if (client_list.containsKey(terminal_sn)) {
-                            ECRHubClientPo clientPo = client_list.get(terminal_sn);
-                            if (clientPo.isIs_connected()) {
-                                clientPo.setIs_connected(false);
-                                client_list.put(terminal_sn, clientPo);
-                                getConnectInfo();
-                            }
+                @Override
+                public void onRemoved(ECRHubDevice ecrHubDevice) {
+                    String terminal_sn = ecrHubDevice.getTerminal_sn();
+                    LinkedHashMap<String, ECRHubClientPo> client_list = ECRHubClientManager.getInstance().getClient_list();
+                    if (client_list.containsKey(terminal_sn)) {
+                        ECRHubClientPo clientPo = client_list.get(terminal_sn);
+                        if (clientPo.isIs_connected()) {
+                            clientPo.setIs_connected(false);
+                            client_list.put(terminal_sn, clientPo);
+                            getConnectInfo();
                         }
                     }
-                });
+                }
+            });
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                alert.setContentText("Enable Listening error!");
-                alert.showAndWait();
-                return;
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            alert.setContentText("Enable Listening error!");
+            alert.showAndWait();
+            return false;
+        }
 
-            ECRHubClientManager.getInstance().setOpen_listener(true);
-            listenerButton.setText("Disable Listening");
-            refreshButton.setDisable(false);
-        } else {
-            try {
-                devicePairInstance.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                ECRHubClientManager.getInstance().setOpen_listener(false);
-                listenerButton.setText("Enable Listening");
-                refreshButton.setDisable(true);
-            }
+        ECRHubClientManager.getInstance().setOpen_listener(true);
+        refreshButton.setDisable(false);
+        getConnectInfo();
+        return true;
+    }
+
+    private boolean closeListenerAction() {
+        ECRHubClientWebSocketService devicePairInstance = ECRHubClientWebSocketService.getInstance();
+        try {
+            devicePairInstance.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            ECRHubClientManager.getInstance().setOpen_listener(false);
+            refreshButton.setDisable(true);
         }
         getConnectInfo();
+        return true;
     }
 
     @FXML

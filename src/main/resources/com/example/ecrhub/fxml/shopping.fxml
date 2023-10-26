@@ -8,10 +8,24 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ecrhub.controller.ShoppingController">
     <BorderPane fx:id="container" prefHeight="400.0" prefWidth="500.0">
         <left>
-            <GridPane fx:id="productGrid" alignment="CENTER" hgap="20" vgap="20" />
+            <VBox alignment="CENTER" minWidth="200.0" BorderPane.alignment="TOP_CENTER" spacing="20">
+                <GridPane fx:id="productGrid" alignment="CENTER" hgap="20" vgap="20" />
+                <HBox alignment="CENTER_LEFT" spacing="20.0" >
+                    <padding>
+                        <Insets left="30.0" />
+                    </padding>
+                    <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
+                </HBox>
+            </VBox>
         </left>
         <right>
             <VBox alignment="CENTER" minWidth="200.0" BorderPane.alignment="TOP_CENTER">
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets bottom="10.0" />
+                    </padding>
+                    <Label text="Shopping Cart: "/>
+                </HBox>
                 <ListView fx:id="listView" prefHeight="400.0" prefWidth="200.0" />
                 <HBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
                     <Label text="Total to pay: " />
@@ -23,6 +37,7 @@
                      <Font size="20.0" />
                   </font></Label>
                 </HBox>
+                <Button mnemonicParsing="false" text="Charge" onAction="#handleNextButtonAction"/>
             <opaqueInsets>
                <Insets />
             </opaqueInsets>
@@ -34,11 +49,5 @@
             </padding>
             </VBox>
         </right>
-        <bottom>
-            <HBox alignment="CENTER" spacing="20.0" minWidth="200.0" BorderPane.alignment="TOP_CENTER">
-                <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
-                <Button mnemonicParsing="false" text="Next" onAction="#handleNextButtonAction"/>
-            </HBox>
-        </bottom>
     </BorderPane>
 </VBox>

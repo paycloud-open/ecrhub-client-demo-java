@@ -1,17 +1,17 @@
 package com.example.ecrhub.controller;
 
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.util.JSONFormatUtil;
+import com.example.ecrhub.util.SwitchButton;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
@@ -21,12 +21,6 @@ import javafx.scene.layout.VBox;
  */
 public class UsbController {
 
-    @FXML
-    private Button connectButton;
-
-    @FXML
-    private Button disconnectButton;
-
     public TextArea connect_info;
 
     private Task<String> task = null;
@@ -34,21 +28,35 @@ public class UsbController {
     @FXML
     private VBox wait_vbox;
 
+    @FXML
+    private HBox switch_hbox;
+
+    private SwitchButton switch_button;
+
     public void initialize() {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
+        switch_button = new SwitchButton(instance.isConnected()) {
+            @Override
+            public boolean buttonOffAction() {
+                return disconnectButtonAction();
+            }
+
+            @Override
+            public boolean buttonOnAction() {
+                return connectButtonAction();
+            }
+        };
+        switch_hbox.getChildren().add(switch_button);
         if (instance.isConnected()) {
-            connectButton.setDisable(true);
-            disconnectButton.setDisable(false);
             connect_info.setText(instance.getConnect_info() == null ? "Connected!" : JSONFormatUtil.formatJson(instance.getConnect_info()));
         }
     }
 
-    @FXML
-    private void connectButtonAction(ActionEvent event) {
+    private boolean connectButtonAction() {
         task = new Task<String>() {
             @Override
             protected String call() throws Exception {
-                connectButton.setDisable(true);
+                switch_hbox.setDisable(true);
 
                 wait_vbox.setVisible(true);
                 wait_vbox.setManaged(true);
@@ -71,8 +79,7 @@ public class UsbController {
             connect_info.setVisible(true);
             connect_info.setManaged(true);
 
-            connectButton.setDisable(true);
-            disconnectButton.setDisable(false);
+            switch_hbox.setDisable(false);
             connect_info.setText(JSONFormatUtil.formatJson(ecrHubResponse));
         });
 
@@ -82,8 +89,8 @@ public class UsbController {
             connect_info.setVisible(true);
             connect_info.setManaged(true);
 
-            connectButton.setDisable(false);
-            disconnectButton.setDisable(true);
+            switch_hbox.setDisable(false);
+            switch_button.setButtonOff();
             connect_info.setText("Unconnected! \n Connect error! Please try again!");
         });
 
@@ -98,13 +105,15 @@ public class UsbController {
             } catch (Exception e) {
 
             }
-            connectButton.setDisable(false);
-            disconnectButton.setDisable(true);
+
+            switch_hbox.setDisable(false);
+            switch_button.setButtonOff();
             connect_info.setText("Unconnected!");
         });
 
         Thread thread = new Thread(task);
         thread.start();
+        return true;
     }
 
     @FXML
@@ -114,8 +123,7 @@ public class UsbController {
         }
     }
 
-    @FXML
-    private void disconnectButtonAction(ActionEvent event) {
+    private boolean disconnectButtonAction() {
         try {
             ECRHubClientManager instance = ECRHubClientManager.getInstance();
             ECRHubClient client = instance.getClient();
@@ -124,9 +132,8 @@ public class UsbController {
         } catch (Exception e) {
 
         } finally {
-            connectButton.setDisable(false);
-            disconnectButton.setDisable(true);
             connect_info.setText("Unconnected!");
         }
+        return true;
     }
 }

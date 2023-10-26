@@ -27,7 +27,7 @@ public class JumpController {
     public ChoiceBox<String> choiceBox;
 
     public void initialize() {
-        choiceBox.getItems().addAll("USB", "LAN/WLAN");
+        choiceBox.getItems().addAll("USB", "WLAN/LAN");
         choiceBox.setValue("USB");
         setCenter("/com/example/ecrhub/fxml/usb.fxml");
     }
@@ -35,7 +35,7 @@ public class JumpController {
     @FXML
     protected void onChoiceBoxChange() {
         String value = choiceBox.getValue();
-        if ("LAN/WLAN".equals(value)) {
+        if ("WLAN/LAN".equals(value)) {
             toConnect();
         } else {
             toUsb();
