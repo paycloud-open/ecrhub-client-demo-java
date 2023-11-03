@@ -48,7 +48,11 @@ public class SubmitController {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
         if (1 == instance.getConnectType()) {
             // 串口连接初始化页面
-            terminal_sn.setText(instance.getConnect_info().getDevice_data().getDevice_sn());
+            if (instance.getConnect_info().getDevice_data() != null) {
+                terminal_sn.setText(instance.getConnect_info().getDevice_data().getDevice_sn());
+            } else {
+                terminal_sn.setText("Unknown");
+            }
             terminalBox.setVisible(false);
             terminalBox.setManaged(false);
         } else {
