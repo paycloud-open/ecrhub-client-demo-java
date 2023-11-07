@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.ecrhub.controller.DebugController">
+    <BorderPane prefHeight="400.0" prefWidth="500.0">
+        <left>
+            <VBox alignment="CENTER_LEFT" maxWidth="200.0" BorderPane.alignment="TOP_LEFT" spacing="20">
+                <padding>
+                    <Insets left="50.0"/>
+                </padding>
+                <RadioButton fx:id="purchaseButton" text="Purchase" selected="true"/>
+                <RadioButton fx:id="refundButton" text="Refund"/>
+                <RadioButton fx:id="queryButton" text="Query"/>
+                <RadioButton fx:id="closeButton" text="Close"/>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets left="-30.0" top="50"/>
+                    </padding>
+                    <Button mnemonicParsing="false" text="Return" onAction="#handleReturnButtonAction" />
+                </HBox>
+            </VBox>
+        </left>
+        <right>
+            <VBox alignment="TOP_LEFT" minWidth="400.0" BorderPane.alignment="TOP_LEFT" spacing="10">
+                <padding>
+                    <Insets left="-100.0"/>
+                </padding>
+                <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
+                    <Label minWidth="180" text="Merchant order number: " alignment="CENTER_RIGHT"/>
+                    <TextField fx:id="merchant_order_no" prefHeight="26.0" prefWidth="200.0"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT"
+                      fx:id="orig_merchant_order_no_box" visible="false" managed="false">
+                    <Label minWidth="180" text="Original merchant order number: " alignment="CENTER_RIGHT"/>
+                    <TextField fx:id="orig_merchant_order_no" prefHeight="26.0" prefWidth="200.0"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT"
+                      fx:id="order_amount_box">
+                    <Label minWidth="180" text="Order amount: " alignment="CENTER_RIGHT"/>
+                    <TextField fx:id="order_amount" prefHeight="26.0" prefWidth="200.0"/>
+                </HBox>
+                <HBox alignment="CENTER">
+                    <padding>
+                        <Insets left="130.0"/>
+                    </padding>
+                    <Button mnemonicParsing="false" text="Create Sample Message" prefHeight="30" prefWidth="170" onAction="#createSampleMessageAction">
+                        <font>
+                            <Font size="14.0"/>
+                        </font>
+                    </Button>
+                </HBox>
+                <HBox  spacing="20.0" BorderPane.alignment="CENTER_LEFT">
+                    <Label minWidth="180" text="Request Sample Message: " alignment="TOP_RIGHT"/>
+                        <TextArea minHeight="80" prefWidth="200.0" editable="false" wrapText="true" fx:id="request_sample_hex"/>
+                </HBox>
+                <Label minWidth="180" text="--------------------------------------------------------------------------"
+                       alignment="CENTER_RIGHT"/>
+                <HBox alignment="CENTER">
+                    <padding>
+                        <Insets left="130.0"/>
+                    </padding>
+                    <Button mnemonicParsing="false" text="Send Message" prefHeight="30" prefWidth="170" fx:id="send_message_button" disable="true">
+                        <font>
+                            <Font size="14.0"/>
+                        </font>
+                    </Button>
+                </HBox>
+                <HBox spacing="20.0" BorderPane.alignment="CENTER_LEFT">
+                    <Label minWidth="180" text="Response Sample Message: " alignment="TOP_RIGHT"/>
+                    <TextArea minHeight="80" prefWidth="200.0" editable="false" wrapText="true" fx:id="response_sample_hex"/>
+                </HBox>
+                <HBox spacing="20.0" BorderPane.alignment="CENTER_LEFT">
+                    <Label minWidth="180" text="Response information: " alignment="TOP_RIGHT"/>
+                        <TextArea minHeight="160.0" editable="false" wrapText="true" prefWidth="200.0" fx:id="response_info"/>
+                </HBox>
+            </VBox>
+        </right>
+    </BorderPane>
+</VBox>

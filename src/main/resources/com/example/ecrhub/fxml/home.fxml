@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox alignment="CENTER" prefHeight="231.0" prefWidth="426.0" spacing="60.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ecrhub.controller.HomeController">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+    <children>
+        <Button mnemonicParsing="false" onAction="#handleSettingButtonAction" text="Settings"
+                prefHeight="50" prefWidth="150">
+            <font>
+                <Font size="24.0"/>
+            </font>
+        </Button>
+        <Button mnemonicParsing="false" onAction="#handleDemoButtonAction" text="Demo" prefHeight="50" prefWidth="150">
+            <font>
+                <Font size="24.0"/>
+            </font>
+        </Button>
+        <Button mnemonicParsing="false" disable="true" onAction="#handleDebugButtonAction" text="Debugging" prefHeight="50" prefWidth="150">
+            <font>
+                <Font size="24.0"/>
+            </font>
+        </Button>
+    </children>
+</VBox>

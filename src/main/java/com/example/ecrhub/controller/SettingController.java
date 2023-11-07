@@ -73,8 +73,8 @@ public class SettingController {
         }
 
         instance.setConnectType(connect_type);
-        SceneManager.getInstance().loadScene("shopping", "/com/example/ecrhub/fxml/shopping.fxml");
-        SceneManager.getInstance().switchScene("shopping");
+        SceneManager.getInstance().loadScene("home", "/com/example/ecrhub/fxml/home.fxml");
+        SceneManager.getInstance().switchScene("home");
     }
 
     private void setCenter(String path) {

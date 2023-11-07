@@ -14,7 +14,7 @@ public class ECRHubDemoApplication extends Application {
     public void start(Stage stage) throws IOException {
         SceneManager.getInstance().setStage(stage);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(ECRHubDemoApplication.class.getResource("/com/example/ecrhub/fxml/shopping.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ECRHubDemoApplication.class.getResource("/com/example/ecrhub/fxml/home.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setTitle("ECR-Hub Demo");
         stage.setScene(scene);

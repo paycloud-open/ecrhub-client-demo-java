@@ -102,8 +102,8 @@ public class ShoppingController {
     }
 
     @FXML
-    private void handleSettingButtonAction(ActionEvent event) {
-        SceneManager.getInstance().loadScene("home", "/com/example/ecrhub/fxml/setting.fxml");
+    private void handleReturnButtonAction(ActionEvent event) {
+        SceneManager.getInstance().loadScene("home", "/com/example/ecrhub/fxml/home.fxml");
         SceneManager.getInstance().switchScene("home");
     }
 
