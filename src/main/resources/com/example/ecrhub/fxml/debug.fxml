@@ -63,7 +63,7 @@
                     <padding>
                         <Insets left="130.0"/>
                     </padding>
-                    <Button mnemonicParsing="false" text="Send Message" prefHeight="30" prefWidth="170" fx:id="send_message_button" disable="true">
+                    <Button mnemonicParsing="false" text="Send Message" prefHeight="30" prefWidth="170" fx:id="send_message_button" disable="true" onAction="#sendSampleMessageAction">
                         <font>
                             <Font size="14.0"/>
                         </font>
@@ -72,10 +72,6 @@
                 <HBox spacing="20.0" BorderPane.alignment="CENTER_LEFT">
                     <Label minWidth="180" text="Response Sample Message: " alignment="TOP_RIGHT"/>
                     <TextArea minHeight="80" prefWidth="200.0" editable="false" wrapText="true" fx:id="response_sample_hex"/>
-                </HBox>
-                <HBox spacing="20.0" BorderPane.alignment="CENTER_LEFT">
-                    <Label minWidth="180" text="Response information: " alignment="TOP_RIGHT"/>
-                        <TextArea minHeight="160.0" editable="false" wrapText="true" prefWidth="200.0" fx:id="response_info"/>
                 </HBox>
             </VBox>
         </right>

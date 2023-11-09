@@ -21,7 +21,7 @@
                 <Font size="24.0"/>
             </font>
         </Button>
-        <Button mnemonicParsing="false" disable="true" onAction="#handleDebugButtonAction" text="Debugging" prefHeight="50" prefWidth="150">
+        <Button mnemonicParsing="false" onAction="#handleDebugButtonAction" text="Debugging" prefHeight="50" prefWidth="150">
             <font>
                 <Font size="24.0"/>
             </font>

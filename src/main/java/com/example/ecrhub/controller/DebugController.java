@@ -3,7 +3,10 @@ package com.example.ecrhub.controller;
 import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.manager.SceneManager;
+import com.wiseasy.ecr.hub.sdk.ECRHubClient;
+import com.wiseasy.ecr.hub.sdk.ECRHubSerialPortClient;
 import com.wiseasy.ecr.hub.sdk.protobuf.ECRHubRequestProto;
 import com.wiseasy.ecr.hub.sdk.sp.serialport.SerialPortMessage;
 import javafx.beans.value.ChangeListener;
@@ -59,10 +62,9 @@ public class DebugController {
     @FXML
     private TextArea response_sample_hex;
 
-    @FXML
-    private TextArea response_info;
-
     private static String current_choose = "Purchase";
+
+    private static String REQUEST_ID;
 
     public void initialize() {
         ToggleGroup group = new ToggleGroup();
@@ -110,7 +112,7 @@ public class DebugController {
         request_sample_hex.setText(null);
         send_message_button.setDisable(true);
         response_sample_hex.setText(null);
-        response_info.setText(null);
+        REQUEST_ID = null;
         switch (current_choose) {
             case "Purchase": {
                 orig_merchant_order_no_box.setVisible(false);
@@ -148,9 +150,10 @@ public class DebugController {
             builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("3");
         }
 
+        REQUEST_ID = IdUtil.fastSimpleUUID();
         ECRHubRequestProto.RequestBizData bizData = builder.build();
         ECRHubRequestProto.ECRHubRequest request = ECRHubRequestProto.ECRHubRequest.newBuilder()
-                .setRequestId(IdUtil.fastSimpleUUID())
+                .setRequestId(REQUEST_ID)
                 .setTimestamp(String.valueOf(System.currentTimeMillis()))
                 .setTopic(topic)
                 .setBizData(bizData)
@@ -195,8 +198,23 @@ public class DebugController {
         SceneManager.getInstance().switchScene("home");
     }
 
+    @FXML
+    private void sendSampleMessageAction(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR!");
+        try {
+            ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+            ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
+            byte[] response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(request_sample_hex.getText()));
+            response_sample_hex.setText(new SerialPortMessage().decode(response_bytes).toString());
+        } catch (Exception e) {
+            alert.setContentText("Connect to ECH Hub error!");
+            alert.showAndWait();
+        }
+    }
 
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws Exception {
         ECRHubRequestProto.RequestBizData bizData = ECRHubRequestProto.RequestBizData.newBuilder()
                 .setMerchantOrderNo("O1698817488630")
                 .setPayMethodCategory("BANKCARD")
@@ -212,6 +230,11 @@ public class DebugController {
                 .build();
 
         byte[] message = new SerialPortMessage.DataMessage(request.toByteArray()).encode();
-        System.out.println(HexUtil.encodeHexStr(message, false));
+        String show_message = HexUtil.encodeHexStr(message, false);
+        System.out.println(show_message);
+        ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+        ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
+        portClient.send(IdUtil.fastSimpleUUID(), HexUtil.decodeHex(show_message));
+        new SerialPortMessage().decode(message).toString();
     }
 }
