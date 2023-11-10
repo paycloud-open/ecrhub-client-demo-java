@@ -5,6 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.manager.SceneManager;
+import com.example.ecrhub.pojo.ECRDebugPo;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubSerialPortClient;
 import com.wiseasy.ecr.hub.sdk.protobuf.ECRHubRequestProto;
@@ -39,6 +40,18 @@ public class DebugController {
     private RadioButton closeButton;
 
     @FXML
+    private RadioButton send_raw;
+
+    @FXML
+    private RadioButton send_pretty;
+
+    @FXML
+    private RadioButton receive_raw;
+
+    @FXML
+    private RadioButton receive_pretty;
+
+    @FXML
     private HBox orig_merchant_order_no_box;
 
     @FXML
@@ -54,24 +67,36 @@ public class DebugController {
     private TextField order_amount;
 
     @FXML
-    private TextArea request_sample_hex;
+    private TextArea send_message;
 
     @FXML
     private Button send_message_button;
 
     @FXML
-    private TextArea response_sample_hex;
+    private TextArea receive_message;
 
     private static String current_choose = "Purchase";
 
     private static String REQUEST_ID;
 
+    private ECRDebugPo DEBUG_PO;
+
     public void initialize() {
+        DEBUG_PO = new ECRDebugPo();
+
         ToggleGroup group = new ToggleGroup();
         purchaseButton.setToggleGroup(group);
         refundButton.setToggleGroup(group);
         queryButton.setToggleGroup(group);
         closeButton.setToggleGroup(group);
+
+        ToggleGroup send_group = new ToggleGroup();
+        send_raw.setToggleGroup(send_group);
+        send_pretty.setToggleGroup(send_group);
+
+        ToggleGroup receive_group = new ToggleGroup();
+        receive_raw.setToggleGroup(receive_group);
+        receive_pretty.setToggleGroup(receive_group);
 
         order_amount.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -97,21 +122,75 @@ public class DebugController {
             }
         });
 
+        send_message.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // 数据改变
+                if (oldValue && !newValue) {
+                    String hex_string = send_message.getText();
+                    if (StrUtil.isNotEmpty(hex_string)) {
+                        try {
+                            byte[] send_message_bytes = HexUtil.decodeHex(hex_string);
+                            SerialPortMessage portMessage = new SerialPortMessage().decode(send_message_bytes);
+                            byte[] message_bytes = portMessage.getMessageData();
+                            ECRHubRequestProto.ECRHubRequest hubRequest = ECRHubRequestProto.ECRHubRequest.parseFrom(message_bytes);
+                            REQUEST_ID = hubRequest.getRequestId();
+                            send_message_button.setDisable(false);
+
+                            DEBUG_PO.setSend_raw(hex_string);
+                            DEBUG_PO.setSend_pretty(new SerialPortMessage().decode(send_message_bytes).toString());
+                        } catch (Exception e) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("ERROR!");
+                            alert.setContentText("Please enter the correct HEX Message!");
+                            alert.showAndWait();
+                            send_message.setText(null);
+                        }
+                    }
+                }
+            }
+        });
+
         group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             RadioButton selectedRadioButton = (RadioButton) newValue;
             current_choose = selectedRadioButton.getText();
             initScreen();
         });
+
+        send_group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            RadioButton selectedRadioButton = (RadioButton) newValue;
+            current_choose = selectedRadioButton.getText();
+            if ("Raw".equals(current_choose)) {
+                send_message.setEditable(true);
+                send_message.setText(DEBUG_PO.getSend_raw());
+            } else {
+                send_message.setEditable(false);
+                send_message.setText(DEBUG_PO.getSend_pretty());
+            }
+        });
+
+        receive_group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            RadioButton selectedRadioButton = (RadioButton) newValue;
+            current_choose = selectedRadioButton.getText();
+            if ("Raw".equals(current_choose)) {
+                receive_message.setText(DEBUG_PO.getReceive_raw());
+            } else {
+                receive_message.setText(DEBUG_PO.getReceive_pretty());
+            }
+        });
     }
 
     private void initScreen() {
         // 初始化
+        DEBUG_PO = new ECRDebugPo();
+        send_raw.setSelected(true);
+        receive_raw.setSelected(true);
         merchant_order_no.setText(null);
         orig_merchant_order_no.setText(null);
         order_amount.setText(null);
-        request_sample_hex.setText(null);
+        send_message.setText(null);
         send_message_button.setDisable(true);
-        response_sample_hex.setText(null);
+        receive_message.setText(null);
         REQUEST_ID = null;
         switch (current_choose) {
             case "Purchase": {
@@ -159,7 +238,10 @@ public class DebugController {
                 .setBizData(bizData)
                 .build();
         byte[] message = new SerialPortMessage.DataMessage(request.toByteArray()).encode();
-        request_sample_hex.setText(HexUtil.encodeHexStr(message, false));
+        DEBUG_PO.setSend_raw(HexUtil.encodeHexStr(message, false));
+        DEBUG_PO.setSend_pretty(new SerialPortMessage().decode(message).toString());
+
+        send_message.setText(send_raw.isSelected() ? DEBUG_PO.getSend_raw() : DEBUG_PO.getSend_pretty());
         send_message_button.setDisable(false);
     }
 
@@ -205,8 +287,11 @@ public class DebugController {
         try {
             ECRHubClient client = ECRHubClientManager.getInstance().getClient();
             ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
-            byte[] response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(request_sample_hex.getText()));
-            response_sample_hex.setText(new SerialPortMessage().decode(response_bytes).toString());
+            byte[] response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(send_message.getText()));
+            DEBUG_PO.setReceive_raw(HexUtil.encodeHexStr(response_bytes, false));
+            DEBUG_PO.setReceive_pretty(new SerialPortMessage().decode(response_bytes).toString());
+
+            receive_message.setText(receive_raw.isSelected() ? DEBUG_PO.getReceive_raw() : DEBUG_PO.getReceive_pretty());
         } catch (Exception e) {
             alert.setContentText("Connect to ECH Hub error!");
             alert.showAndWait();
@@ -236,5 +321,12 @@ public class DebugController {
         ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
         portClient.send(IdUtil.fastSimpleUUID(), HexUtil.decodeHex(show_message));
         new SerialPortMessage().decode(message).toString();
+
+        // hex手动输入
+        String hex_string = "xxx";
+        SerialPortMessage portMessage = new SerialPortMessage().decode(HexUtil.decodeHex(hex_string));
+        byte[] message_bytes = portMessage.getMessageData();
+        ECRHubRequestProto.ECRHubRequest hubRequest = ECRHubRequestProto.ECRHubRequest.parseFrom(message_bytes);
+        hubRequest.getRequestId();
     }
 }
