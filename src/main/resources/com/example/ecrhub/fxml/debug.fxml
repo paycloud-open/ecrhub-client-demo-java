@@ -47,7 +47,7 @@
                     <padding>
                         <Insets left="-20.0"/>
                     </padding>
-                    <Button mnemonicParsing="false" text="Create Sample Message" prefHeight="30" prefWidth="170" onAction="#createSampleMessageAction">
+                    <Button mnemonicParsing="false" text="Create Sample Message" prefHeight="30" prefWidth="170" fx:id="create_message_button" onAction="#createSampleMessageAction">
                         <font>
                             <Font size="12.0"/>
                         </font>
@@ -75,6 +75,12 @@
                     <RadioButton minWidth="100" text="Pretty" fx:id="receive_pretty"/>
                 </HBox>
                 <TextArea minHeight="100" maxWidth="400.0" editable="false" wrapText="true" fx:id="receive_message"/>
+                <VBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER" visible="false"
+                      managed="false" fx:id="wait_vbox">
+                    <ProgressIndicator/>
+                    <Label text="Please wait..."/>
+                    <Button mnemonicParsing="false" text="Cancel" onAction="#sendCancelAction"/>
+                </VBox>
             </VBox>
         </right>
     </BorderPane>

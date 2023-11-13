@@ -10,12 +10,15 @@ import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubSerialPortClient;
 import com.wiseasy.ecr.hub.sdk.protobuf.ECRHubRequestProto;
 import com.wiseasy.ecr.hub.sdk.sp.serialport.SerialPortMessage;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -70,6 +73,9 @@ public class DebugController {
     private TextArea send_message;
 
     @FXML
+    private Button create_message_button;
+
+    @FXML
     private Button send_message_button;
 
     @FXML
@@ -80,6 +86,11 @@ public class DebugController {
     private static String REQUEST_ID;
 
     private ECRDebugPo DEBUG_PO;
+
+    @FXML
+    private VBox wait_vbox;
+
+    private Task<String> send_task = null;
 
     public void initialize() {
         DEBUG_PO = new ECRDebugPo();
@@ -198,13 +209,15 @@ public class DebugController {
                 orig_merchant_order_no_box.setManaged(false);
                 order_amount_box.setVisible(true);
                 order_amount_box.setManaged(true);
-            } return;
+            }
+            return;
             case "Refund": {
                 orig_merchant_order_no_box.setVisible(true);
                 orig_merchant_order_no_box.setManaged(true);
                 order_amount_box.setVisible(false);
                 order_amount_box.setManaged(false);
-            } return;
+            }
+            return;
             case "Query":
             case "Close": {
                 orig_merchant_order_no_box.setVisible(false);
@@ -260,16 +273,20 @@ public class DebugController {
                     alert.showAndWait();
                     return "error";
                 }
-            } return "ecrhub.pay.order";
+            }
+            return "ecrhub.pay.order";
             case "Refund": {
                 if (StrUtil.isEmpty(orig_merchant_order_no.getText())) {
                     alert.setContentText("Please enter the original merchant order number");
                     alert.showAndWait();
                     return "error";
                 }
-            } return "ecrhub.pay.order";
-            case "Query": return "ecrhub.pay.query";
-            case "Close": return "ecrhub.pay.close";
+            }
+            return "ecrhub.pay.order";
+            case "Query":
+                return "ecrhub.pay.query";
+            case "Close":
+                return "ecrhub.pay.close";
         }
         return "error";
     }
@@ -282,51 +299,73 @@ public class DebugController {
 
     @FXML
     private void sendSampleMessageAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("ERROR!");
-        try {
-            ECRHubClient client = ECRHubClientManager.getInstance().getClient();
-            ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
-            byte[] response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(DEBUG_PO.getSend_raw()));
-            DEBUG_PO.setReceive_raw(HexUtil.encodeHexStr(response_bytes, false));
-            DEBUG_PO.setReceive_pretty(new SerialPortMessage().decode(response_bytes).toString());
+        send_task = new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                create_message_button.setDisable(true);
+                send_message_button.setDisable(true);
 
-            receive_message.setText(receive_raw.isSelected() ? DEBUG_PO.getReceive_raw() : DEBUG_PO.getReceive_pretty());
-        } catch (Exception e) {
-            alert.setContentText("Connect to ECH Hub error!");
-            alert.showAndWait();
-        }
+                wait_vbox.setVisible(true);
+                wait_vbox.setManaged(true);
+                receive_message.setVisible(false);
+                receive_message.setManaged(false);
+
+
+                ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+                ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
+                byte[] response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(DEBUG_PO.getSend_raw()));
+                DEBUG_PO.setReceive_raw(HexUtil.encodeHexStr(response_bytes, false));
+                DEBUG_PO.setReceive_pretty(new SerialPortMessage().decode(response_bytes).toString());
+
+                receive_message.setText(receive_raw.isSelected() ? DEBUG_PO.getReceive_raw() : DEBUG_PO.getReceive_pretty());
+                return "success";
+            }
+        };
+
+        send_task.setOnSucceeded(success -> {
+            wait_vbox.setVisible(false);
+            wait_vbox.setManaged(false);
+            receive_message.setVisible(true);
+            receive_message.setManaged(true);
+
+            create_message_button.setDisable(false);
+        });
+
+        send_task.setOnFailed(fail -> {
+            wait_vbox.setVisible(false);
+            wait_vbox.setManaged(false);
+            receive_message.setVisible(true);
+            receive_message.setManaged(true);
+
+            create_message_button.setDisable(false);
+            send_message_button.setDisable(false);
+
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("ERROR!");
+                alert.setContentText("Connect to ECR-Hub error!");
+                alert.showAndWait();
+            });
+        });
+
+        send_task.setOnCancelled(cancel -> {
+            wait_vbox.setVisible(false);
+            wait_vbox.setManaged(false);
+            receive_message.setVisible(true);
+            receive_message.setManaged(true);
+
+            create_message_button.setDisable(false);
+            send_message_button.setDisable(false);
+        });
+
+        Thread thread = new Thread(send_task);
+        thread.start();
     }
 
-
-    public static void main(String[] args) throws Exception {
-        ECRHubRequestProto.RequestBizData bizData = ECRHubRequestProto.RequestBizData.newBuilder()
-                .setMerchantOrderNo("O1698817488630")
-                .setPayMethodCategory("BANKCARD")
-                .setTransType("1")
-                .setOrderAmount("1")
-                .build();
-
-        ECRHubRequestProto.ECRHubRequest request = ECRHubRequestProto.ECRHubRequest.newBuilder()
-                .setRequestId(IdUtil.fastSimpleUUID())
-                .setTimestamp(String.valueOf(System.currentTimeMillis()))
-                .setTopic("ecrhub.pay.order")
-                .setBizData(bizData)
-                .build();
-
-        byte[] message = new SerialPortMessage.DataMessage(request.toByteArray()).encode();
-        String show_message = HexUtil.encodeHexStr(message, false);
-        System.out.println(show_message);
-        ECRHubClient client = ECRHubClientManager.getInstance().getClient();
-        ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
-        portClient.send(IdUtil.fastSimpleUUID(), HexUtil.decodeHex(show_message));
-        new SerialPortMessage().decode(message).toString();
-
-        // hex手动输入
-        String hex_string = "xxx";
-        SerialPortMessage portMessage = new SerialPortMessage().decode(HexUtil.decodeHex(hex_string));
-        byte[] message_bytes = portMessage.getMessageData();
-        ECRHubRequestProto.ECRHubRequest hubRequest = ECRHubRequestProto.ECRHubRequest.parseFrom(message_bytes);
-        hubRequest.getRequestId();
+    @FXML
+    private void sendCancelAction(ActionEvent event) {
+        if (send_task != null && send_task.isRunning()) {
+            send_task.cancel();
+        }
     }
 }
