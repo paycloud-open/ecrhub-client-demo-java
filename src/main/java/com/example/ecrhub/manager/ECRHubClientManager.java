@@ -50,11 +50,10 @@ public class ECRHubClientManager {
         this.connectType = connectType;
     }
 
-    public ECRHubClient getClient() throws ECRHubException {
-        if (client != null && client.isConnected()) {
-            return client;
+    public synchronized ECRHubClient getClient() throws ECRHubException {
+        if (client == null) {
+            client = ECRHubClientFactory.create("sp://");
         }
-        client = ECRHubClientFactory.create("sp://");
         return client;
     }
 
