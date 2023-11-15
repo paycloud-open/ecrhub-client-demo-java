@@ -251,6 +251,7 @@ public class DebugController {
                 .setBizData(bizData)
                 .build();
         byte[] message = new SerialPortMessage.DataMessage(request.toByteArray()).encode();
+        DEBUG_PO = new ECRDebugPo();
         DEBUG_PO.setSend_raw(HexUtil.encodeHexStr(message, false));
         DEBUG_PO.setSend_pretty(new SerialPortMessage().decode(message).toString());
 
