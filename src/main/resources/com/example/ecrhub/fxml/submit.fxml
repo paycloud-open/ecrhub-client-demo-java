@@ -34,7 +34,7 @@
            <Label  text="Please wait..." fx:id="wait_label"/>
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
-           <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
+           <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Back" />
            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit" />
        </HBox>
    </children>

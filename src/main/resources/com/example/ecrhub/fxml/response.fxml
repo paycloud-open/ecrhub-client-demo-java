@@ -24,7 +24,7 @@
            </ScrollPane>
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
-           <Button fx:id="returnButton" mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
+           <Button fx:id="returnButton" mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Back" />
        </HBox>
    </children>
 </VBox>
