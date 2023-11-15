@@ -38,7 +38,7 @@ public class SceneManager {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
         try {
             Parent root = loader.load();
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 1000, 600);
             sceneMap.put(name, scene);
         } catch (Exception e) {
             e.printStackTrace();
