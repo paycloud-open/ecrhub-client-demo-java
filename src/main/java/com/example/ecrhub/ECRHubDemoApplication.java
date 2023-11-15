@@ -15,7 +15,7 @@ public class ECRHubDemoApplication extends Application {
         SceneManager.getInstance().setStage(stage);
 
         FXMLLoader fxmlLoader = new FXMLLoader(ECRHubDemoApplication.class.getResource("/com/example/ecrhub/fxml/home.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
         stage.setTitle("ECR-Hub Demo");
         stage.setScene(scene);
         stage.show();
