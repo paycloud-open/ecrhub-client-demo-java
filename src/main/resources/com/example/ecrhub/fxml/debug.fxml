@@ -50,7 +50,7 @@
                             <Font size="12.0" />
                         </font>
                     </Button>
-                    <Button fx:id="send_message_button" disable="true" mnemonicParsing="false" onAction="#sendSampleMessageAction" prefHeight="30" prefWidth="170" text="Send Message">
+                    <Button fx:id="send_message_button" mnemonicParsing="false" onAction="#sendSampleMessageAction" prefHeight="30" prefWidth="170" text="Send Message">
                         <font>
                             <Font size="14.0" />
                         </font>

@@ -146,7 +146,6 @@ public class DebugController {
                             byte[] message_bytes = portMessage.getMessageData();
                             ECRHubRequestProto.ECRHubRequest hubRequest = ECRHubRequestProto.ECRHubRequest.parseFrom(message_bytes);
                             REQUEST_ID = hubRequest.getRequestId();
-                            send_message_button.setDisable(false);
 
                             DEBUG_PO.setSend_raw(hex_string);
                             DEBUG_PO.setSend_pretty(new SerialPortMessage().decode(send_message_bytes).toString());
@@ -200,7 +199,6 @@ public class DebugController {
         orig_merchant_order_no.setText(null);
         order_amount.setText(null);
         send_message.setText(null);
-        send_message_button.setDisable(true);
         receive_message.setText(null);
         REQUEST_ID = null;
         switch (current_choose) {
@@ -300,6 +298,13 @@ public class DebugController {
 
     @FXML
     private void sendSampleMessageAction(ActionEvent event) {
+        if (StrUtil.isEmpty(DEBUG_PO.getSend_raw())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR!");
+            alert.setContentText("Please create or input sample message");
+            alert.showAndWait();
+        }
+
         send_task = new Task<String>() {
             @Override
             protected String call() throws Exception {
@@ -330,6 +335,7 @@ public class DebugController {
             receive_message.setManaged(true);
 
             create_message_button.setDisable(false);
+            send_message_button.setDisable(false);
         });
 
         send_task.setOnFailed(fail -> {
