@@ -5,8 +5,6 @@ import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
 import com.wiseasy.ecr.hub.sdk.exception.ECRHubException;
 import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 
@@ -16,8 +14,6 @@ import java.util.LinkedHashMap;
  * @description:
  */
 public class ECRHubClientManager {
-
-    Logger logger = LoggerFactory.getLogger(ECRHubClientManager.class);
 
     private ECRHubClientManager() {
     }
