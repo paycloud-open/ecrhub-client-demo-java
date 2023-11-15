@@ -16,6 +16,7 @@
                     <Label text="Transaction Type: " minWidth="100"/>
                     <ChoiceBox fx:id="trans_choice" onAction="#onTransChoiceChange" minWidth="100.0" />
                 </HBox>
+                <Label alignment="CENTER_RIGHT" minWidth="180" text="---------------------------------------------------" />
                 <VBox alignment="TOP_LEFT" spacing="10" BorderPane.alignment="TOP_LEFT">
                     <padding>
                         <Insets left="-50.0" />
@@ -35,6 +36,10 @@
                     <HBox fx:id="order_amount_box" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
                         <Label alignment="CENTER_RIGHT" minWidth="180" text="Order amount: " />
                         <TextField fx:id="order_amount" prefHeight="26.0" minWidth="150.0" />
+                    </HBox>
+                    <HBox fx:id="pay_method_category_box" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
+                        <Label alignment="CENTER_RIGHT" minWidth="180" text="payment method category: " />
+                        <ChoiceBox fx:id="pay_method_category_choice" onAction="#onTransChoiceChange" minWidth="100.0" />
                     </HBox>
                 </VBox>
                 <Button fx:id="create_message_button" mnemonicParsing="false" onAction="#createSampleMessageAction" prefHeight="30" prefWidth="170" text="Create Sample Message">

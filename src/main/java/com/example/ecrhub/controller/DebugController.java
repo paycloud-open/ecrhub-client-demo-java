@@ -55,6 +55,9 @@ public class DebugController {
     private HBox order_amount_box;
 
     @FXML
+    private HBox pay_method_category_box;
+
+    @FXML
     private TextField merchant_order_no;
 
     @FXML
@@ -62,6 +65,8 @@ public class DebugController {
 
     @FXML
     private TextField order_amount;
+
+    public ChoiceBox<String> pay_method_category_choice;
 
     @FXML
     private TextArea send_message;
@@ -91,6 +96,9 @@ public class DebugController {
 
         trans_choice.getItems().addAll("Purchase", "Refund", "Query", "Close");
         trans_choice.setValue("Purchase");
+
+        pay_method_category_choice.getItems().addAll("BANKCARD", "QR_C_SCAN_B", "QR_B_SCAN_C");
+        pay_method_category_choice.setValue("BANKCARD");
 
         ToggleGroup send_group = new ToggleGroup();
         send_raw.setToggleGroup(send_group);
@@ -193,6 +201,8 @@ public class DebugController {
                 orig_merchant_order_no_box.setManaged(false);
                 order_amount_box.setVisible(true);
                 order_amount_box.setManaged(true);
+                pay_method_category_box.setVisible(true);
+                pay_method_category_box.setManaged(true);
             }
             return;
             case "Refund": {
@@ -200,6 +210,8 @@ public class DebugController {
                 orig_merchant_order_no_box.setManaged(true);
                 order_amount_box.setVisible(false);
                 order_amount_box.setManaged(false);
+                pay_method_category_box.setVisible(false);
+                pay_method_category_box.setManaged(false);
             }
             return;
             case "Query":
@@ -208,6 +220,8 @@ public class DebugController {
                 orig_merchant_order_no_box.setManaged(false);
                 order_amount_box.setVisible(false);
                 order_amount_box.setManaged(false);
+                pay_method_category_box.setVisible(false);
+                pay_method_category_box.setManaged(false);
             }
         }
     }
@@ -221,7 +235,7 @@ public class DebugController {
         ECRHubRequestProto.RequestBizData.Builder builder = ECRHubRequestProto.RequestBizData.newBuilder();
         builder.setMerchantOrderNo(merchant_order_no.getText());
         if ("Purchase".equals(trans_choice.getValue())) {
-            builder.setPayMethodCategory("BANKCARD").setTransType("1").setOrderAmount(order_amount.getText());
+            builder.setPayMethodCategory(pay_method_category_choice.getValue()).setTransType("1").setOrderAmount(order_amount.getText());
         } else if ("Refund".equals(trans_choice.getValue())) {
             builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("3");
         }
