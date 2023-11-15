@@ -39,7 +39,7 @@
                     </HBox>
                     <HBox fx:id="pay_method_category_box" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
                         <Label alignment="CENTER_RIGHT" minWidth="180" text="payment method category: " />
-                        <ChoiceBox fx:id="pay_method_category_choice" onAction="#onTransChoiceChange" minWidth="100.0" />
+                        <ChoiceBox fx:id="pay_method_category_choice" minWidth="100.0" />
                     </HBox>
                 </VBox>
                 <Button fx:id="create_message_button" mnemonicParsing="false" onAction="#createSampleMessageAction" prefHeight="30" prefWidth="170" text="Create Sample Message">
