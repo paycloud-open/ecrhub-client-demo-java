@@ -303,6 +303,7 @@ public class DebugController {
             alert.setTitle("ERROR!");
             alert.setContentText("Please create or input sample message");
             alert.showAndWait();
+            return;
         }
 
         send_task = new Task<String>() {
