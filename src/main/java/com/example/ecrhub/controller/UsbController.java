@@ -13,6 +13,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author: yanzx
@@ -20,6 +22,8 @@ import javafx.scene.layout.VBox;
  * @description:
  */
 public class UsbController {
+
+    Logger logger =  LoggerFactory.getLogger(UsbController.class);
 
     public TextArea connect_info;
 
@@ -62,10 +66,14 @@ public class UsbController {
                 wait_vbox.setManaged(true);
                 connect_info.setVisible(false);
                 connect_info.setManaged(false);
-
-                ECRHubClient client = ECRHubClientManager.getInstance().getClient();
-                ECRHubResponse ecrHubResponse = client.connect2();
-                return JSON.toJSONString(ecrHubResponse);
+                try {
+                    ECRHubClient client = ECRHubClientManager.getInstance().getClient();
+                    ECRHubResponse ecrHubResponse = client.connect2();
+                    return JSON.toJSONString(ecrHubResponse);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    throw e;
+                }
             }
         };
 
