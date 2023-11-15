@@ -1,85 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.ecrhub.controller.DebugController">
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ecrhub.controller.DebugController">
     <BorderPane prefHeight="400.0" prefWidth="500.0">
         <left>
-            <VBox alignment="CENTER_LEFT" maxWidth="200.0" BorderPane.alignment="TOP_LEFT" spacing="20">
+            <VBox alignment="CENTER_LEFT" maxWidth="200.0" spacing="20" BorderPane.alignment="TOP_LEFT">
                 <padding>
-                    <Insets left="50.0"/>
+                    <Insets left="50.0" />
                 </padding>
-                <RadioButton fx:id="purchaseButton" text="Purchase" selected="true"/>
-                <RadioButton fx:id="refundButton" text="Refund"/>
-                <RadioButton fx:id="queryButton" text="Query"/>
-                <RadioButton fx:id="closeButton" text="Close"/>
+                <RadioButton fx:id="purchaseButton" selected="true" text="Purchase" />
+                <RadioButton fx:id="refundButton" text="Refund" />
+                <RadioButton fx:id="queryButton" text="Query" />
+                <RadioButton fx:id="closeButton" text="Close" />
                 <HBox alignment="CENTER_LEFT">
                     <padding>
-                        <Insets left="-30.0" top="50"/>
+                        <Insets left="-30.0" top="50" />
                     </padding>
-                    <Button mnemonicParsing="false" text="Return" onAction="#handleReturnButtonAction" />
+                    <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
                 </HBox>
             </VBox>
         </left>
         <right>
-            <VBox alignment="TOP_LEFT" minWidth="400.0" BorderPane.alignment="TOP_LEFT" spacing="10">
+            <VBox alignment="TOP_LEFT" minWidth="400.0" spacing="10" BorderPane.alignment="TOP_LEFT">
                 <padding>
-                    <Insets left="-100.0"/>
+                    <Insets left="-100.0" />
                 </padding>
                 <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
-                    <Label minWidth="180" text="Merchant order number: " alignment="CENTER_RIGHT"/>
-                    <TextField fx:id="merchant_order_no" prefHeight="26.0" prefWidth="200.0"/>
+                    <Label alignment="CENTER_RIGHT" minWidth="180" text="Merchant order number: " />
+                    <TextField fx:id="merchant_order_no" prefHeight="26.0" prefWidth="200.0" />
                 </HBox>
-                <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT"
-                      fx:id="orig_merchant_order_no_box" visible="false" managed="false">
-                    <Label minWidth="180" text="Original merchant order number: " alignment="CENTER_RIGHT"/>
-                    <TextField fx:id="orig_merchant_order_no" prefHeight="26.0" prefWidth="200.0"/>
+                <HBox fx:id="orig_merchant_order_no_box" alignment="CENTER_LEFT" managed="false" spacing="20.0" visible="false" BorderPane.alignment="CENTER_LEFT">
+                    <Label alignment="CENTER_RIGHT" minWidth="180" text="Original merchant order number: " />
+                    <TextField fx:id="orig_merchant_order_no" prefHeight="26.0" prefWidth="200.0" />
                 </HBox>
-                <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT"
-                      fx:id="order_amount_box">
-                    <Label minWidth="180" text="Order amount: " alignment="CENTER_RIGHT"/>
-                    <TextField fx:id="order_amount" prefHeight="26.0" prefWidth="200.0"/>
+                <HBox fx:id="order_amount_box" alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
+                    <Label alignment="CENTER_RIGHT" minWidth="180" text="Order amount: " />
+                    <TextField fx:id="order_amount" prefHeight="26.0" prefWidth="200.0" />
                 </HBox>
                 <HBox alignment="CENTER" spacing="20">
                     <padding>
-                        <Insets left="-20.0"/>
+                        <Insets left="-20.0" />
                     </padding>
-                    <Button mnemonicParsing="false" text="Create Sample Message" prefHeight="30" prefWidth="170" fx:id="create_message_button" onAction="#createSampleMessageAction">
+                    <Button fx:id="create_message_button" mnemonicParsing="false" onAction="#createSampleMessageAction" prefHeight="30" prefWidth="170" text="Create Sample Message">
                         <font>
-                            <Font size="12.0"/>
+                            <Font size="12.0" />
                         </font>
                     </Button>
-                    <Button mnemonicParsing="false" text="Send Message" prefHeight="30" prefWidth="170" fx:id="send_message_button" disable="true" onAction="#sendSampleMessageAction">
+                    <Button fx:id="send_message_button" disable="true" mnemonicParsing="false" onAction="#sendSampleMessageAction" prefHeight="30" prefWidth="170" text="Send Message">
                         <font>
-                            <Font size="14.0"/>
+                            <Font size="14.0" />
                         </font>
                     </Button>
                 </HBox>
 
                 <HBox alignment="CENTER_LEFT" maxWidth="400.0" spacing="20">
-                    <Label minWidth="180" text="Send Message: " alignment="TOP_RIGHT"/>
-                    <RadioButton minWidth="50" text="Raw" selected="true" fx:id="send_raw"/>
-                    <RadioButton minWidth="100" text="Pretty" fx:id="send_pretty"/>
+                    <Label alignment="TOP_RIGHT" minWidth="180" text="Send Message: " />
+                    <RadioButton fx:id="send_raw" minWidth="50" selected="true" text="Raw" />
+                    <RadioButton fx:id="send_pretty" minWidth="100" text="Pretty" />
                 </HBox>
-                <TextArea minHeight="100" maxWidth="400.0" wrapText="true" fx:id="send_message"/>
+                <TextArea fx:id="send_message" maxWidth="400.0" minHeight="180" wrapText="true" />
 
-                <Label minWidth="180" text="--------------------------------------------------------------------------"
-                       alignment="CENTER_RIGHT"/>
+                <Label alignment="CENTER_RIGHT" minWidth="180" text="--------------------------------------------------------------------------" />
 
                 <HBox alignment="CENTER_LEFT" maxWidth="400.0" spacing="20">
-                    <Label minWidth="180" text="Received Message: " alignment="TOP_RIGHT"/>
-                    <RadioButton minWidth="50" text="Raw" selected="true" fx:id="receive_raw"/>
-                    <RadioButton minWidth="100" text="Pretty" fx:id="receive_pretty"/>
+                    <Label alignment="TOP_RIGHT" minWidth="180" text="Received Message: " />
+                    <RadioButton fx:id="receive_raw" minWidth="50" selected="true" text="Raw" />
+                    <RadioButton fx:id="receive_pretty" minWidth="100" text="Pretty" />
                 </HBox>
-                <TextArea minHeight="100" maxWidth="400.0" editable="false" wrapText="true" fx:id="receive_message"/>
-                <VBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER" visible="false"
-                      managed="false" fx:id="wait_vbox">
-                    <ProgressIndicator/>
-                    <Label text="Please wait..."/>
-                    <Button mnemonicParsing="false" text="Cancel" onAction="#sendCancelAction"/>
+                <TextArea fx:id="receive_message" editable="false" maxWidth="400.0" minHeight="180" wrapText="true" />
+                <VBox fx:id="wait_vbox" alignment="BOTTOM_CENTER" managed="false" spacing="20.0" visible="false" BorderPane.alignment="BOTTOM_CENTER">
+                    <ProgressIndicator minWidth="50" minHeight="50"/>
+                    <Label text="Please wait..." />
+                    <Button mnemonicParsing="false" onAction="#sendCancelAction" text="Cancel" />
                 </VBox>
             </VBox>
         </right>
