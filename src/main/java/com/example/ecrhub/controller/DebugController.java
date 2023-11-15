@@ -96,7 +96,7 @@ public class DebugController {
 
     private Task<String> send_task = null;
 
-    private String message_md5;
+    private byte message_id;
 
     public void initialize() {
         DEBUG_PO = new ECRDebugPo();
@@ -323,7 +323,9 @@ public class DebugController {
                 receive_message.setVisible(false);
                 receive_message.setManaged(false);
 
-                if (StrUtil.isNotEmpty(message_md5) && message_md5.equals(DEBUG_PO.getSend_raw())) {
+                byte[] send_bytes = HexUtil.decodeHex(DEBUG_PO.getSend_raw());
+                byte send_message_id = new SerialPortMessage().decode(send_bytes).getMessageId();
+                if (message_id > 0 && message_id == send_message_id) {
                     Platform.runLater(() -> {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle("ERROR!");
@@ -332,12 +334,13 @@ public class DebugController {
                     });
                     return null;
                 }
-                message_md5 = DEBUG_PO.getSend_raw();
+                message_id = send_message_id;
+
                 ECRHubClient client = ECRHubClientManager.getInstance().getClient();
                 ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
                 byte[] response_bytes;
                 try {
-                    response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(DEBUG_PO.getSend_raw()));
+                    response_bytes = portClient.send(REQUEST_ID, send_bytes);
                 } catch (Exception e) {
                     DEBUG_PO.setReceive_raw(e.getMessage());
                     DEBUG_PO.setReceive_pretty(e.getMessage());
