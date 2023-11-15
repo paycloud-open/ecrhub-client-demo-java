@@ -25,6 +25,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -36,6 +38,8 @@ import java.util.List;
  * @description:
  */
 public class ConnectController {
+
+    Logger logger = LoggerFactory.getLogger(ConnectController.class);
 
     @FXML
     private Button connectButton;
@@ -283,9 +287,14 @@ public class ConnectController {
                 pairing_wait_vbox.setManaged(true);
                 unPairedList.setVisible(false);
                 unPairedList.setManaged(false);
-
-                ECRHubClient socketPortClient = ECRHubClientFactory.create(unpaired_device.getWs_address());
-                socketPortClient.connect();
+                ECRHubClient socketPortClient;
+                try {
+                    socketPortClient = ECRHubClientFactory.create(unpaired_device.getWs_address());
+                    socketPortClient.connect();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    throw e;
+                }
                 ECRHubClientPo clientPo = new ECRHubClientPo();
                 clientPo.setIs_connected(true);
                 clientPo.setDevice(unpaired_device);

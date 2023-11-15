@@ -14,6 +14,8 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -24,6 +26,8 @@ import java.util.LinkedHashMap;
  * @description:
  */
 public class SubmitController {
+
+    Logger logger = LoggerFactory.getLogger(SubmitController.class);
 
     @FXML
     private Button submitButton;
@@ -159,9 +163,14 @@ public class SubmitController {
         request.setPay_method_category("BANKCARD");
 
         // Execute purchase request
-        PurchaseResponse response = client.execute(request);
-        System.out.println("Purchase Response:" + response);
-        return response;
+        try {
+            PurchaseResponse response = client.execute(request);
+            System.out.println("Purchase Response:" + response);
+            return response;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
     }
 
 }
