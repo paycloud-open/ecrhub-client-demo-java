@@ -65,7 +65,6 @@ public class ECRHubClientManager {
         try {
             return client.isConnected();
         } catch (Exception e) {
-            logger.warn("isConnected error", e);
             return false;
         }
     }
