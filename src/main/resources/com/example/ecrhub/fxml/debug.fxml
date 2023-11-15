@@ -80,7 +80,7 @@
                 <padding>
                     <Insets top="30" />
                 </padding>
-                <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Return" />
+                <Button mnemonicParsing="false" onAction="#handleReturnButtonAction" text="Back" />
             </HBox>
         </bottom>
     </BorderPane>
