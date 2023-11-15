@@ -23,7 +23,7 @@
         </Button>
         <Button mnemonicParsing="false" onAction="#handleDebugButtonAction" text="Debugging" prefHeight="50" prefWidth="150">
             <font>
-                <Font size="24.0"/>
+                <Font size="20.0"/>
             </font>
         </Button>
     </children>
