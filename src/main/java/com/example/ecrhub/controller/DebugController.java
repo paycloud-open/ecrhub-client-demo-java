@@ -170,8 +170,8 @@ public class DebugController {
 
         send_group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             RadioButton selectedRadioButton = (RadioButton) newValue;
-            current_choose = selectedRadioButton.getText();
-            if ("Raw".equals(current_choose)) {
+            String send_choose = selectedRadioButton.getText();
+            if ("Raw".equals(send_choose)) {
                 send_message.setEditable(true);
                 send_message.setText(DEBUG_PO.getSend_raw());
             } else {
@@ -182,8 +182,8 @@ public class DebugController {
 
         receive_group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             RadioButton selectedRadioButton = (RadioButton) newValue;
-            current_choose = selectedRadioButton.getText();
-            if ("Raw".equals(current_choose)) {
+            String receive_choose = selectedRadioButton.getText();
+            if ("Raw".equals(receive_choose)) {
                 receive_message.setText(DEBUG_PO.getReceive_raw());
             } else {
                 receive_message.setText(DEBUG_PO.getReceive_pretty());
@@ -230,6 +230,7 @@ public class DebugController {
 
     @FXML
     private void createSampleMessageAction(ActionEvent event) {
+
         String topic = checkAndGetTopic();
         if ("error".equals(topic)) {
             return;
@@ -251,7 +252,6 @@ public class DebugController {
                 .setBizData(bizData)
                 .build();
         byte[] message = new SerialPortMessage.DataMessage(request.toByteArray()).encode();
-        DEBUG_PO = new ECRDebugPo();
         DEBUG_PO.setSend_raw(HexUtil.encodeHexStr(message, false));
         DEBUG_PO.setSend_pretty(new SerialPortMessage().decode(message).toString());
 
