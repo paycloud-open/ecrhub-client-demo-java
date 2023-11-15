@@ -19,6 +19,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,6 +31,8 @@ import java.math.RoundingMode;
  * @description:
  */
 public class DebugController {
+
+    Logger logger = LoggerFactory.getLogger(DebugController.class);
 
     @FXML
     private RadioButton purchaseButton;
@@ -320,7 +324,15 @@ public class DebugController {
 
                 ECRHubClient client = ECRHubClientManager.getInstance().getClient();
                 ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
-                byte[] response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(DEBUG_PO.getSend_raw()));
+                byte[] response_bytes;
+                try {
+                    response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(DEBUG_PO.getSend_raw()));
+                } catch (Exception e) {
+                    DEBUG_PO.setReceive_raw(e.getMessage());
+                    DEBUG_PO.setReceive_pretty(e.getMessage());
+                    logger.error(e.getMessage(), e);
+                    throw e;
+                }
                 if (response_bytes == null || response_bytes.length == 0) {
                     DEBUG_PO.setReceive_raw("");
                     DEBUG_PO.setReceive_pretty("");
@@ -356,7 +368,7 @@ public class DebugController {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("ERROR!");
-                alert.setContentText("Connect to ECR-Hub error!");
+                alert.setContentText("Request to ECR-Hub error!");
                 alert.showAndWait();
             });
         });
