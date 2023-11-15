@@ -321,8 +321,13 @@ public class DebugController {
                 ECRHubClient client = ECRHubClientManager.getInstance().getClient();
                 ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
                 byte[] response_bytes = portClient.send(REQUEST_ID, HexUtil.decodeHex(DEBUG_PO.getSend_raw()));
-                DEBUG_PO.setReceive_raw(HexUtil.encodeHexStr(response_bytes, false));
-                DEBUG_PO.setReceive_pretty(new SerialPortMessage().decode(response_bytes).toString());
+                if (response_bytes == null || response_bytes.length == 0) {
+                    DEBUG_PO.setReceive_raw("");
+                    DEBUG_PO.setReceive_pretty("");
+                } else {
+                    DEBUG_PO.setReceive_raw(HexUtil.encodeHexStr(response_bytes, false));
+                    DEBUG_PO.setReceive_pretty(new SerialPortMessage().decode(response_bytes).toString());
+                }
 
                 receive_message.setText(receive_raw.isSelected() ? DEBUG_PO.getReceive_raw() : DEBUG_PO.getReceive_pretty());
                 return "success";
