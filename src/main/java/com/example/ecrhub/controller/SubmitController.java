@@ -160,7 +160,6 @@ public class SubmitController {
         request.setApp_id(CommonConstant.APP_ID);
         request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
         request.setOrder_amount(amount_str);
-        request.setPay_method_category("BANKCARD");
 
         // Execute purchase request
         try {

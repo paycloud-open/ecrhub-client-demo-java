@@ -34,17 +34,7 @@ public class DebugController {
 
     Logger logger = LoggerFactory.getLogger(DebugController.class);
 
-    @FXML
-    private RadioButton purchaseButton;
-
-    @FXML
-    private RadioButton refundButton;
-
-    @FXML
-    private RadioButton queryButton;
-
-    @FXML
-    private RadioButton closeButton;
+    public ChoiceBox<String> trans_choice;
 
     @FXML
     private RadioButton send_raw;
@@ -85,8 +75,6 @@ public class DebugController {
     @FXML
     private TextArea receive_message;
 
-    private static String current_choose = "Purchase";
-
     private static String REQUEST_ID;
 
     private ECRDebugPo DEBUG_PO;
@@ -101,11 +89,8 @@ public class DebugController {
     public void initialize() {
         DEBUG_PO = new ECRDebugPo();
 
-        ToggleGroup group = new ToggleGroup();
-        purchaseButton.setToggleGroup(group);
-        refundButton.setToggleGroup(group);
-        queryButton.setToggleGroup(group);
-        closeButton.setToggleGroup(group);
+        trans_choice.getItems().addAll("Purchase", "Refund", "Query", "Close");
+        trans_choice.setValue("Purchase");
 
         ToggleGroup send_group = new ToggleGroup();
         send_raw.setToggleGroup(send_group);
@@ -145,7 +130,7 @@ public class DebugController {
                 // 数据改变
                 if (oldValue && !newValue) {
                     String hex_string = send_message.getText();
-                    if (StrUtil.isNotEmpty(hex_string)) {
+                    if (send_raw.isSelected() && StrUtil.isNotEmpty(hex_string)) {
                         try {
                             byte[] send_message_bytes = HexUtil.decodeHex(hex_string);
                             SerialPortMessage portMessage = new SerialPortMessage().decode(send_message_bytes);
@@ -165,12 +150,6 @@ public class DebugController {
                     }
                 }
             }
-        });
-
-        group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            RadioButton selectedRadioButton = (RadioButton) newValue;
-            current_choose = selectedRadioButton.getText();
-            initScreen();
         });
 
         send_group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -196,7 +175,8 @@ public class DebugController {
         });
     }
 
-    private void initScreen() {
+    @FXML
+    protected void onTransChoiceChange() {
         // 初始化
         DEBUG_PO = new ECRDebugPo();
         send_raw.setSelected(true);
@@ -207,7 +187,7 @@ public class DebugController {
         send_message.setText(null);
         receive_message.setText(null);
         REQUEST_ID = null;
-        switch (current_choose) {
+        switch (trans_choice.getValue()) {
             case "Purchase": {
                 orig_merchant_order_no_box.setVisible(false);
                 orig_merchant_order_no_box.setManaged(false);
@@ -234,16 +214,15 @@ public class DebugController {
 
     @FXML
     private void createSampleMessageAction(ActionEvent event) {
-
         String topic = checkAndGetTopic();
         if ("error".equals(topic)) {
             return;
         }
         ECRHubRequestProto.RequestBizData.Builder builder = ECRHubRequestProto.RequestBizData.newBuilder();
         builder.setMerchantOrderNo(merchant_order_no.getText());
-        if ("Purchase".equals(current_choose)) {
+        if ("Purchase".equals(trans_choice.getValue())) {
             builder.setPayMethodCategory("BANKCARD").setTransType("1").setOrderAmount(order_amount.getText());
-        } else if ("Refund".equals(current_choose)) {
+        } else if ("Refund".equals(trans_choice.getValue())) {
             builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("3");
         }
 
@@ -271,7 +250,7 @@ public class DebugController {
             alert.showAndWait();
             return "error";
         }
-        switch (current_choose) {
+        switch (trans_choice.getValue()) {
             case "Purchase": {
                 if (StrUtil.isEmpty(order_amount.getText())) {
                     alert.setContentText("Please enter the order amount");
