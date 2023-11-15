@@ -96,6 +96,8 @@ public class DebugController {
 
     private Task<String> send_task = null;
 
+    private String message_md5;
+
     public void initialize() {
         DEBUG_PO = new ECRDebugPo();
 
@@ -321,7 +323,16 @@ public class DebugController {
                 receive_message.setVisible(false);
                 receive_message.setManaged(false);
 
-
+                if (StrUtil.isNotEmpty(message_md5) && message_md5.equals(DEBUG_PO.getSend_raw())) {
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("ERROR!");
+                        alert.setContentText("Cannot send the same message repeatedly!");
+                        alert.showAndWait();
+                    });
+                    return null;
+                }
+                message_md5 = DEBUG_PO.getSend_raw();
                 ECRHubClient client = ECRHubClientManager.getInstance().getClient();
                 ECRHubSerialPortClient portClient = (ECRHubSerialPortClient) client;
                 byte[] response_bytes;
