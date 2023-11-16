@@ -55,6 +55,9 @@ public class DebugController {
     private HBox order_amount_box;
 
     @FXML
+    private HBox cashback_amount_box;
+
+    @FXML
     private HBox pay_method_category_box;
 
     @FXML
@@ -65,6 +68,9 @@ public class DebugController {
 
     @FXML
     private TextField order_amount;
+
+    @FXML
+    private TextField cashback_amount;
 
     public ChoiceBox<String> pay_method_category_choice;
 
@@ -94,8 +100,8 @@ public class DebugController {
     public void initialize() {
         DEBUG_PO = new ECRDebugPo();
 
-        trans_choice.getItems().addAll("Purchase", "Refund", "Query", "Close");
-        trans_choice.setValue("Purchase");
+        trans_choice.getItems().addAll("Sale", "Cancel", "Query", "Close", "Pre-authorization", "Pre-auth Cancel", "Pre-auth Completion", "Pre-auth Completion Cancel", "Cash back");
+        trans_choice.setValue("Sale");
 
         pay_method_category_choice.getItems().addAll("BANKCARD", "QR_C_SCAN_B", "QR_B_SCAN_C");
         pay_method_category_choice.setValue("BANKCARD");
@@ -123,9 +129,33 @@ public class DebugController {
                         } catch (Exception e) {
                             Alert alert = new Alert(Alert.AlertType.ERROR);
                             alert.setTitle("ERROR!");
-                            alert.setContentText("Please enter the correct amount");
+                            alert.setContentText("Please enter the correct order amount");
                             alert.showAndWait();
                             order_amount.setText(null);
+                        }
+                    }
+                }
+            }
+        });
+
+        cashback_amount.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // 数据改变
+                if (oldValue && !newValue) {
+                    // 添加事件
+                    String amount_str = cashback_amount.getText();
+                    if (StrUtil.isNotEmpty(amount_str)) {
+                        BigDecimal amount;
+                        try {
+                            amount = new BigDecimal(amount_str);
+                            cashback_amount.setText(amount.setScale(2, RoundingMode.HALF_UP).toPlainString());
+                        } catch (Exception e) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("ERROR!");
+                            alert.setContentText("Please enter the correct cashback amount");
+                            alert.showAndWait();
+                            cashback_amount.setText(null);
                         }
                     }
                 }
@@ -192,24 +222,32 @@ public class DebugController {
         merchant_order_no.setText(null);
         orig_merchant_order_no.setText(null);
         order_amount.setText(null);
+        cashback_amount.setText(null);
         send_message.setText(null);
         receive_message.setText(null);
         REQUEST_ID = null;
         switch (trans_choice.getValue()) {
-            case "Purchase": {
+            case "Pre-authorization":
+            case "Sale": {
                 orig_merchant_order_no_box.setVisible(false);
                 orig_merchant_order_no_box.setManaged(false);
                 order_amount_box.setVisible(true);
                 order_amount_box.setManaged(true);
+                cashback_amount_box.setVisible(false);
+                cashback_amount_box.setManaged(false);
                 pay_method_category_box.setVisible(true);
                 pay_method_category_box.setManaged(true);
             }
             return;
-            case "Refund": {
+            case "Pre-auth Cancel":
+            case "Pre-auth Completion Cancel":
+            case "Cancel": {
                 orig_merchant_order_no_box.setVisible(true);
                 orig_merchant_order_no_box.setManaged(true);
                 order_amount_box.setVisible(false);
                 order_amount_box.setManaged(false);
+                cashback_amount_box.setVisible(false);
+                cashback_amount_box.setManaged(false);
                 pay_method_category_box.setVisible(false);
                 pay_method_category_box.setManaged(false);
             }
@@ -220,8 +258,32 @@ public class DebugController {
                 orig_merchant_order_no_box.setManaged(false);
                 order_amount_box.setVisible(false);
                 order_amount_box.setManaged(false);
+                cashback_amount_box.setVisible(false);
+                cashback_amount_box.setManaged(false);
                 pay_method_category_box.setVisible(false);
                 pay_method_category_box.setManaged(false);
+            }
+            return;
+            case "Pre-auth Completion": {
+                orig_merchant_order_no_box.setVisible(true);
+                orig_merchant_order_no_box.setManaged(true);
+                order_amount_box.setVisible(true);
+                order_amount_box.setManaged(true);
+                cashback_amount_box.setVisible(false);
+                cashback_amount_box.setManaged(false);
+                pay_method_category_box.setVisible(false);
+                pay_method_category_box.setManaged(false);
+            }
+            return;
+            case "Cash back": {
+                orig_merchant_order_no_box.setVisible(false);
+                orig_merchant_order_no_box.setManaged(false);
+                order_amount_box.setVisible(true);
+                order_amount_box.setManaged(true);
+                cashback_amount_box.setVisible(true);
+                cashback_amount_box.setManaged(true);
+                pay_method_category_box.setVisible(true);
+                pay_method_category_box.setManaged(true);
             }
         }
     }
@@ -234,10 +296,28 @@ public class DebugController {
         }
         ECRHubRequestProto.RequestBizData.Builder builder = ECRHubRequestProto.RequestBizData.newBuilder();
         builder.setMerchantOrderNo(merchant_order_no.getText());
-        if ("Purchase".equals(trans_choice.getValue())) {
-            builder.setPayMethodCategory(pay_method_category_choice.getValue()).setTransType("1").setOrderAmount(order_amount.getText());
-        } else if ("Refund".equals(trans_choice.getValue())) {
-            builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("3");
+        switch (trans_choice.getValue()) {
+            case "Sale":
+                builder.setPayMethodCategory(pay_method_category_choice.getValue()).setTransType("1").setOrderAmount(order_amount.getText());
+                break;
+            case "Cancel":
+                builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("2");
+                break;
+            case "Pre-authorization":
+                builder.setPayMethodCategory(pay_method_category_choice.getValue()).setTransType("4").setOrderAmount(order_amount.getText());
+                break;
+            case "Pre-auth Cancel":
+                builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("5");
+                break;
+            case "Pre-auth Completion":
+                builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("6").setOrderAmount(order_amount.getText());
+                break;
+            case "Pre-auth Completion Cancel":
+                builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("7");
+                break;
+            case "Cash back":
+                builder.setPayMethodCategory(pay_method_category_choice.getValue()).setTransType("11")
+                        .setOrderAmount(order_amount.getText()).setCashbackAmount(cashback_amount.getText());
         }
 
         REQUEST_ID = IdUtil.fastSimpleUUID();
@@ -265,7 +345,15 @@ public class DebugController {
             return "error";
         }
         switch (trans_choice.getValue()) {
-            case "Purchase": {
+            case "Cash back": {
+                if (StrUtil.isEmpty(cashback_amount.getText())) {
+                    alert.setContentText("Please enter the cashback amount");
+                    alert.showAndWait();
+                    return "error";
+                }
+            }
+            case "Pre-authorization":
+            case "Sale": {
                 if (StrUtil.isEmpty(order_amount.getText())) {
                     alert.setContentText("Please enter the order amount");
                     alert.showAndWait();
@@ -273,7 +361,9 @@ public class DebugController {
                 }
             }
             return "ecrhub.pay.order";
-            case "Refund": {
+            case "Pre-auth Cancel":
+            case "Pre-auth Completion Cancel":
+            case "Cancel": {
                 if (StrUtil.isEmpty(orig_merchant_order_no.getText())) {
                     alert.setContentText("Please enter the original merchant order number");
                     alert.showAndWait();
@@ -281,6 +371,20 @@ public class DebugController {
                 }
             }
             return "ecrhub.pay.order";
+            case "Pre-auth Completion": {
+                if (StrUtil.isEmpty(orig_merchant_order_no.getText())) {
+                    alert.setContentText("Please enter the original merchant order number");
+                    alert.showAndWait();
+                    return "error";
+                }
+                if (StrUtil.isEmpty(order_amount.getText())) {
+                    alert.setContentText("Please enter the order amount");
+                    alert.showAndWait();
+                    return "error";
+                }
+            }
+            return "ecrhub.pay.order";
+
             case "Query":
                 return "ecrhub.pay.query";
             case "Close":

@@ -30,6 +30,10 @@
                         <Label alignment="CENTER_RIGHT" minWidth="180" text="Order amount: " />
                         <TextField fx:id="order_amount" prefHeight="26.0" minWidth="150.0" />
                     </HBox>
+                    <HBox fx:id="cashback_amount_box" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
+                        <Label alignment="CENTER_RIGHT" minWidth="180" text="Cashback amount: " />
+                        <TextField fx:id="cashback_amount" prefHeight="26.0" minWidth="150.0" />
+                    </HBox>
                     <HBox fx:id="pay_method_category_box" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
                         <Label alignment="CENTER_RIGHT" minWidth="180" text="Payment method category: "/>
                         <ChoiceBox fx:id="pay_method_category_choice" minWidth="100.0" />

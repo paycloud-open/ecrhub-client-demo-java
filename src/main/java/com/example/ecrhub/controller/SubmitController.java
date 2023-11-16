@@ -48,6 +48,8 @@ public class SubmitController {
 
     public ChoiceBox<String> terminalBox;
 
+    public ChoiceBox<String> pay_method_category_choice;
+
     public void initialize() {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
         if (1 == instance.getConnectType()) {
@@ -84,6 +86,9 @@ public class SubmitController {
         } else {
             trans_amount.setText(PurchaseManager.getInstance().getTrans_amount().getText());
         }
+
+        pay_method_category_choice.getItems().addAll("BANKCARD", "QR_C_SCAN_B", "QR_B_SCAN_C");
+        pay_method_category_choice.setValue("BANKCARD");
     }
 
     @FXML
@@ -160,7 +165,7 @@ public class SubmitController {
         request.setApp_id(CommonConstant.APP_ID);
         request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
         request.setOrder_amount(amount_str);
-        request.setPay_method_category("BANKCARD");
+        request.setPay_method_category(pay_method_category_choice.getValue());
 
         // Execute purchase request
         try {
