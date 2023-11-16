@@ -29,7 +29,7 @@
        </HBox>
        <HBox alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
            <Label alignment="CENTER_RIGHT" minWidth="180" text="Payment method category: "/>
-           <ChoiceBox fx:id="pay_method_category_choice" prefWidth="100.0" />
+           <ChoiceBox fx:id="pay_method_category_choice" minWidth="100.0" />
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
             <ProgressIndicator  fx:id="progress_indicator" />
