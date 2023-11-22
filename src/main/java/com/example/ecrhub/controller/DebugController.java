@@ -299,6 +299,9 @@ public class DebugController {
         switch (trans_choice.getValue()) {
             case "Sale":
                 builder.setPayMethodCategory(pay_method_category_choice.getValue()).setTransType("1").setOrderAmount(order_amount.getText());
+                if ("QR_C_SCAN_B".equals(pay_method_category_choice.getValue())) {
+                    builder.setPayMethodId("Alipay");
+                }
                 break;
             case "Cancel":
                 builder.setOrigMerchantOrderNo(orig_merchant_order_no.getText()).setTransType("2");
