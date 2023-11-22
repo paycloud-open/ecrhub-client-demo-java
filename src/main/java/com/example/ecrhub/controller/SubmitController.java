@@ -166,6 +166,9 @@ public class SubmitController {
         request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
         request.setOrder_amount(amount_str);
         request.setPay_method_category(pay_method_category_choice.getValue());
+        if ("QR_C_SCAN_B".equals(request.getPay_method_category())) {
+            request.setPay_method_id("Alipay");
+        }
 
         // Execute purchase request
         try {
