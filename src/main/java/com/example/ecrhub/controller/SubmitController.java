@@ -8,8 +8,15 @@ import com.example.ecrhub.manager.PurchaseManager;
 import com.example.ecrhub.manager.SceneManager;
 import com.example.ecrhub.pojo.ECRHubClientPo;
 import com.wiseasy.ecr.hub.sdk.ECRHubClient;
+import com.wiseasy.ecr.hub.sdk.ECRHubConfig;
+import com.wiseasy.ecr.hub.sdk.model.request.CloseRequest;
 import com.wiseasy.ecr.hub.sdk.model.request.PurchaseRequest;
+import com.wiseasy.ecr.hub.sdk.model.request.QueryRequest;
+import com.wiseasy.ecr.hub.sdk.model.request.RefundRequest;
+import com.wiseasy.ecr.hub.sdk.model.response.CloseResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
+import com.wiseasy.ecr.hub.sdk.model.response.QueryResponse;
+import com.wiseasy.ecr.hub.sdk.model.response.RefundResponse;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +34,9 @@ import java.util.LinkedHashMap;
  */
 public class SubmitController {
 
+    @FXML
+    public Button queryButton;
+    public Button refundButton;
     Logger logger = LoggerFactory.getLogger(SubmitController.class);
 
     @FXML
@@ -46,6 +56,17 @@ public class SubmitController {
     @FXML
     private Label terminal_sn;
 
+    @FXML
+    private TextField merchant_order_no;
+
+    public TextField getMerchant_order_no() {
+        return merchant_order_no;
+    }
+
+    public void setMerchant_order_no(TextField merchant_order_no) {
+        this.merchant_order_no = merchant_order_no;
+    }
+
     public ChoiceBox<String> terminalBox;
 
     public ChoiceBox<String> pay_method_category_choice;
@@ -59,12 +80,13 @@ public class SubmitController {
             } else {
                 terminal_sn.setText("Unknown");
             }
+            merchant_order_no.setText(null);
             terminalBox.setVisible(false);
             terminalBox.setManaged(false);
         } else {
             // WLAN 连接初始化页面
             LinkedHashMap<String, ECRHubClientPo> client_list = instance.getClient_list();
-            for (String key: client_list.keySet()) {
+            for (String key : client_list.keySet()) {
                 ECRHubClientPo client_info = client_list.get(key);
                 if (client_info.isIs_connected()) {
                     terminalBox.getItems().add(key);
@@ -117,7 +139,6 @@ public class SubmitController {
                 progress_indicator.setVisible(true);
                 wait_label.setVisible(true);
                 submitButton.setDisable(true);
-
                 PurchaseManager.getInstance().setResponse(requestToECR(amount_str.replace("$", "")));
                 return "success";
             }
@@ -133,7 +154,7 @@ public class SubmitController {
             wait_label.setVisible(false);
             submitButton.setDisable(false);
 
-            alert.setContentText("Connect to ECH Hub error!");
+            alert.setContentText("Read timeout!");
             alert.showAndWait();
         });
 
@@ -142,12 +163,35 @@ public class SubmitController {
             wait_label.setVisible(false);
             trans_amount.setDisable(false);
             submitButton.setDisable(false);
+            try {
+                close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
 
         Thread thread = new Thread(task);
         thread.start();
     }
 
+    private CloseResponse close() throws Exception {
+
+        ECRHubClientManager instance = ECRHubClientManager.getInstance();
+        // 设备选择
+        ECRHubClient client;
+        if (1 == instance.getConnectType()) {
+            client = instance.getClient();
+        } else {
+            LinkedHashMap<String, ECRHubClientPo> client_list = instance.getClient_list();
+            client = client_list.get(terminalBox.getValue()).getClient();
+        }
+        CloseRequest request = new CloseRequest();
+        request.setApp_id(CommonConstant.APP_ID);
+        System.out.println("Close request:" + request);
+        CloseResponse response = client.execute(request);
+        System.out.println("Close response:" + response);
+        return response;
+    }
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
@@ -166,12 +210,17 @@ public class SubmitController {
         request.setMerchant_order_no("DEMO" + new Date().getTime() + RandomUtil.randomNumbers(4));
         request.setOrder_amount(amount_str);
         request.setPay_method_category(pay_method_category_choice.getValue());
+        ECRHubConfig requestConfig = new ECRHubConfig();
+        requestConfig.getSerialPortConfig().setReadTimeout(150000);
+        request.setConfig(requestConfig);
+
         if ("QR_C_SCAN_B".equals(request.getPay_method_category())) {
-            request.setPay_method_id("Alipay");
+            request.setPay_method_id("PAYNOW");//Alipay PAYNOW
         }
 
         // Execute purchase request
         try {
+            System.out.println("Purchase Request:" + request);
             PurchaseResponse response = client.execute(request);
             System.out.println("Purchase Response:" + response);
             return response;

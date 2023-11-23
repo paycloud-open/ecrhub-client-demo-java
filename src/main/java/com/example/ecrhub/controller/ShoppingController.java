@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -33,6 +34,9 @@ public class ShoppingController {
 
     public Label amount;
 
+    public Button queryResponse;
+    public Button refundResponse;
+
     @FXML
     ListView<String> listView;
 
@@ -40,10 +44,10 @@ public class ShoppingController {
         PurchaseManager.getInstance().setTrans_amount(null);
         // 模拟商品数据，包含商品名称和价格
         String[][] products = {
-                {"Beer", "5.00"},
+                {"Beer", "1.00"},
                 {"Coffee", "8.80"},
                 {"Hamburg", "10.00"},
-                {"Waffle", "0.98"},
+                {"Waffle", "0.01"},
                 {"Milk", "3.50"},
                 {"Pasta", "20.00"},
                 {"Pudding", "3.33"},
@@ -105,6 +109,19 @@ public class ShoppingController {
     private void handleReturnButtonAction(ActionEvent event) {
         SceneManager.getInstance().loadScene("home", "/com/example/ecrhub/fxml/home.fxml");
         SceneManager.getInstance().switchScene("home");
+    }
+
+    @FXML
+    private void handleRefundButtonAction(ActionEvent event) {
+        SceneManager.getInstance().loadScene("refundResponse", "/com/example/ecrhub/fxml/refundResponse.fxml");
+        SceneManager.getInstance().switchScene("refundResponse");
+    }
+
+    @FXML
+    private void handleQueryButtonAction(ActionEvent event) {
+
+        SceneManager.getInstance().loadScene("queryResponse", "/com/example/ecrhub/fxml/queryResponse.fxml");
+        SceneManager.getInstance().switchScene("queryResponse");
     }
 
     @FXML

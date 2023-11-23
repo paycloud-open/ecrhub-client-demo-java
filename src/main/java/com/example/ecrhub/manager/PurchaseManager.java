@@ -1,6 +1,8 @@
 package com.example.ecrhub.manager;
 
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
+import com.wiseasy.ecr.hub.sdk.model.response.QueryResponse;
+import com.wiseasy.ecr.hub.sdk.model.response.RefundResponse;
 import javafx.scene.control.Label;
 
 /**
@@ -17,7 +19,13 @@ public class PurchaseManager {
 
     private PurchaseResponse response;
 
+    private QueryResponse queryResponse;
+
+    private RefundResponse refundResponse;
+
     private Label trans_amount;
+
+    private Label merchant_order_no;
 
     public static PurchaseManager getInstance() {
         if (instance == null) {
@@ -34,11 +42,35 @@ public class PurchaseManager {
         this.response = response;
     }
 
+    public RefundResponse getRefundResponse() {
+        return refundResponse;
+    }
+
+    public void setRefundResponse(RefundResponse refundResponse) {
+        this.refundResponse = refundResponse;
+    }
+
+    public QueryResponse getQueryResponse() {
+        return queryResponse;
+    }
+
+    public void setQueryResponse(QueryResponse queryResponse) {
+        this.queryResponse = queryResponse;
+    }
+
     public Label getTrans_amount() {
         return trans_amount;
     }
 
     public void setTrans_amount(Label trans_amount) {
         this.trans_amount = trans_amount;
+    }
+
+    public Label getMerchant_order_no() {
+        return merchant_order_no;
+    }
+
+    public void setMerchant_order_no(Label merchant_order_no) {
+        this.merchant_order_no = merchant_order_no;
     }
 }
