@@ -21,6 +21,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +35,7 @@ import java.util.LinkedHashMap;
  */
 public class SubmitController {
 
-    @FXML
-    public Button queryButton;
-    public Button refundButton;
+    public HBox pay_method;
     Logger logger = LoggerFactory.getLogger(SubmitController.class);
 
     @FXML
@@ -56,20 +55,12 @@ public class SubmitController {
     @FXML
     private Label terminal_sn;
 
-    @FXML
-    private TextField merchant_order_no;
-
-    public TextField getMerchant_order_no() {
-        return merchant_order_no;
-    }
-
-    public void setMerchant_order_no(TextField merchant_order_no) {
-        this.merchant_order_no = merchant_order_no;
-    }
-
     public ChoiceBox<String> terminalBox;
 
     public ChoiceBox<String> pay_method_category_choice;
+
+    public ChoiceBox<String> pay_method_id_choice;
+
 
     public void initialize() {
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
@@ -80,7 +71,6 @@ public class SubmitController {
             } else {
                 terminal_sn.setText("Unknown");
             }
-            merchant_order_no.setText(null);
             terminalBox.setVisible(false);
             terminalBox.setManaged(false);
         } else {
@@ -108,9 +98,26 @@ public class SubmitController {
         } else {
             trans_amount.setText(PurchaseManager.getInstance().getTrans_amount().getText());
         }
-
         pay_method_category_choice.getItems().addAll("BANKCARD", "QR_C_SCAN_B", "QR_B_SCAN_C");
         pay_method_category_choice.setValue("BANKCARD");
+
+        pay_method_id_choice.getItems().addAll("PAYNOW", "Alipay", "Smart Ví", "Alipay+", "WecatPay");
+        pay_method_id_choice.setValue("Alipay");
+
+        // 添加监听器
+        pay_method_category_choice.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if ("QR_C_SCAN_B".equals(newValue)) {
+                // 当值为"QR_C_SCAN_B"时，显示pay_method_id_choice
+                pay_method.setVisible(true);
+                pay_method.setManaged(true);
+            } else {
+                // 否则隐藏pay_method_id_choice
+                pay_method.setVisible(false);
+                pay_method.setManaged(false);
+            }
+        });
+        // 手动触发监听器
+        pay_method_category_choice.fireEvent(new ActionEvent());
     }
 
     @FXML
@@ -215,7 +222,7 @@ public class SubmitController {
         request.setConfig(requestConfig);
 
         if ("QR_C_SCAN_B".equals(request.getPay_method_category())) {
-            request.setPay_method_id("PAYNOW");//Alipay PAYNOW
+            request.setPay_method_id(pay_method_id_choice.getValue());//Alipay PAYNOW
         }
 
         // Execute purchase request

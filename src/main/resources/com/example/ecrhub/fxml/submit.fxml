@@ -31,9 +31,9 @@
            <Label alignment="CENTER_RIGHT" minWidth="180" text="Payment method category: "/>
            <ChoiceBox fx:id="pay_method_category_choice" minWidth="100.0" />
        </HBox>
-       <HBox alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
-           <Label alignment="CENTER_RIGHT" minWidth="180" text="Merchant order number: " />
-           <TextField fx:id="merchant_order_no" prefHeight="26.0" minWidth="150.0" />
+       <HBox fx:id="pay_method"  visible="false" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
+           <Label alignment="CENTER_RIGHT" minWidth="180" text="Payment method id: "/>
+           <ChoiceBox fx:id="pay_method_id_choice"  minWidth="100.0" />
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
             <ProgressIndicator  fx:id="progress_indicator" />
