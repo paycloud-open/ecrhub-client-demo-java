@@ -127,7 +127,7 @@ public class RefundResponseController {
         RefundRequest request = new RefundRequest();
         request.setApp_id(CommonConstant.APP_ID);
         request.setOrig_merchant_order_no(origMerchantOrderNo);
-        request.setMerchant_order_no("C" + new Date().getTime() + RandomUtil.randomNumbers(4));
+        request.setMerchant_order_no("C" + origMerchantOrderNo);
         return request;
     }
 }

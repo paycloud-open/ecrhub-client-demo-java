@@ -102,7 +102,7 @@ public class SubmitController {
         pay_method_category_choice.setValue("BANKCARD");
 
         pay_method_id_choice.getItems().addAll("PAYNOW", "Alipay", "Smart Ví", "Alipay+", "WecatPay");
-        pay_method_id_choice.setValue("Alipay");
+        pay_method_id_choice.setValue("PAYNOW");
 
         // 添加监听器
         pay_method_category_choice.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -218,7 +218,7 @@ public class SubmitController {
         request.setOrder_amount(amount_str);
         request.setPay_method_category(pay_method_category_choice.getValue());
         ECRHubConfig requestConfig = new ECRHubConfig();
-        requestConfig.getSerialPortConfig().setReadTimeout(150000);
+        requestConfig.getSerialPortConfig().setReadTimeout(210000);
         request.setConfig(requestConfig);
 
         if ("QR_C_SCAN_B".equals(request.getPay_method_category())) {

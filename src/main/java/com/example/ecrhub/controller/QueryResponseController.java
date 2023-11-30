@@ -11,12 +11,16 @@ import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.model.request.QueryRequest;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.QueryResponse;
+import com.wiseasy.ecr.hub.sdk.model.response.RefundResponse;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @author: yanzx
@@ -99,12 +103,22 @@ public class QueryResponseController {
             LinkedHashMap<String, ECRHubClientPo> client_list = instance.getClient_list();
             client = client_list.get(terminalBox.getValue()).getClient();
         }
-        QueryRequest request = new QueryRequest();
-        request.setApp_id(CommonConstant.APP_ID);
-        request.setMerchant_order_no(merchant_order_no.getText());
-        System.out.println("Query request:" + request);
-        QueryResponse queryResponse = client.execute(request);
-        System.out.println("Query response:" + queryResponse);
-        return queryResponse;
+        String[] origMerchantOrderNumbers = merchant_order_no.getText().split(",");
+        System.out.println(Arrays.toString(origMerchantOrderNumbers));
+
+        List<QueryResponse> queryResponses = new ArrayList<>();
+
+        for (String origMerchantOrderNo : origMerchantOrderNumbers) {
+            QueryRequest request = new QueryRequest();
+            request.setApp_id(CommonConstant.APP_ID);
+            request.setMerchant_order_no(origMerchantOrderNo);
+            System.out.println("Query request:" + request);
+            QueryResponse queryResponse = client.execute(request);
+            System.out.println("Query response:" + queryResponse);
+            queryResponses.add(queryResponse);
+//            return queryResponse;
+        }
+        // 返回最后一个响应
+        return queryResponses.isEmpty() ? null : queryResponses.get(queryResponses.size() -1);
     }
 }
