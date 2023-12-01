@@ -11,12 +11,9 @@ import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import com.wiseasy.ecr.hub.sdk.ECRHubConfig;
 import com.wiseasy.ecr.hub.sdk.model.request.CloseRequest;
 import com.wiseasy.ecr.hub.sdk.model.request.PurchaseRequest;
-import com.wiseasy.ecr.hub.sdk.model.request.QueryRequest;
-import com.wiseasy.ecr.hub.sdk.model.request.RefundRequest;
 import com.wiseasy.ecr.hub.sdk.model.response.CloseResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
-import com.wiseasy.ecr.hub.sdk.model.response.QueryResponse;
-import com.wiseasy.ecr.hub.sdk.model.response.RefundResponse;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,6 +33,9 @@ import java.util.LinkedHashMap;
 public class SubmitController {
 
     public HBox pay_method;
+    public Label merchant_order_no;
+    public Button closeButton;
+    public HBox order;
     Logger logger = LoggerFactory.getLogger(SubmitController.class);
 
     @FXML
@@ -89,6 +89,7 @@ public class SubmitController {
         progress_indicator.setDisable(true);
         progress_indicator.setVisible(false);
         wait_label.setVisible(false);
+        closeButton.setDisable(true);
 
         if (PurchaseManager.getInstance().getTrans_amount() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -146,6 +147,8 @@ public class SubmitController {
                 progress_indicator.setVisible(true);
                 wait_label.setVisible(true);
                 submitButton.setDisable(true);
+                order.setVisible(true);
+                closeButton.setDisable(false);
                 PurchaseManager.getInstance().setResponse(requestToECR(amount_str.replace("$", "")));
                 return "success";
             }
@@ -160,7 +163,6 @@ public class SubmitController {
             progress_indicator.setVisible(false);
             wait_label.setVisible(false);
             submitButton.setDisable(false);
-
             alert.setContentText("Read timeout!");
             alert.showAndWait();
         });
@@ -170,18 +172,39 @@ public class SubmitController {
             wait_label.setVisible(false);
             trans_amount.setDisable(false);
             submitButton.setDisable(false);
-            try {
-                close();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         });
 
         Thread thread = new Thread(task);
         thread.start();
     }
 
-    private CloseResponse close() throws Exception {
+    @FXML
+    private void handleCloseButtonAction(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Close");
+
+        task = new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                progress_indicator.setVisible(false);
+                wait_label.setVisible(false);
+                Close();
+                return "success";
+            }
+        };
+
+        task.setOnSucceeded(success -> {
+            submitButton.setDisable(false);
+            closeButton.setDisable(true);
+            alert.setContentText("close success");
+            alert.showAndWait();
+        });
+
+        Thread thread = new Thread(task);
+        thread.start();
+    }
+
+    private void Close() throws Exception {
 
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
         // 设备选择
@@ -194,10 +217,10 @@ public class SubmitController {
         }
         CloseRequest request = new CloseRequest();
         request.setApp_id(CommonConstant.APP_ID);
+        request.setMerchant_order_no(merchant_order_no.getText());
         System.out.println("Close request:" + request);
         CloseResponse response = client.execute(request);
         System.out.println("Close response:" + response);
-        return response;
     }
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
@@ -228,6 +251,9 @@ public class SubmitController {
         // Execute purchase request
         try {
             System.out.println("Purchase Request:" + request);
+            Platform.runLater(()-> {
+                merchant_order_no.setText(request.getMerchant_order_no());
+            });
             PurchaseResponse response = client.execute(request);
             System.out.println("Purchase Response:" + response);
             return response;
