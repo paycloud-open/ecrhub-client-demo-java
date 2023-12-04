@@ -49,14 +49,15 @@ public class QueryResponseController {
             trans_amount.setText(queryResponse.getOrder_amount());
             merchant_order_no.setText(queryResponse.getMerchant_order_no());
             response_info.setText(JSONFormatUtil.formatJson(queryResponse));
-        }else {
-            return;
         }
     }
 
 
     @FXML
     private void queryReturnButtonAction(ActionEvent event) {
+        if (task != null && task.isRunning()) {
+            task.cancel();
+        }
         PurchaseManager.getInstance().setQueryResponse(null);
         SceneManager.getInstance().loadScene("shopping", "/com/example/ecrhub/fxml/shopping.fxml");
         SceneManager.getInstance().switchScene("shopping");
@@ -75,6 +76,8 @@ public class QueryResponseController {
         task = new Task<String>() {
             @Override
             protected String call() throws Exception {
+                progress_indicator.setVisible(true);
+                wait_label.setVisible(true);
                 PurchaseManager.getInstance().setQueryResponse(Query());
                 return "success";
             }
@@ -87,6 +90,12 @@ public class QueryResponseController {
         task.setOnFailed(fail -> {
             alert.setContentText("connect error!");
             alert.showAndWait();
+        });
+
+        task.setOnCancelled(cancel -> {
+            progress_indicator.setVisible(false);
+            wait_label.setVisible(false);
+            PurchaseManager.getInstance().setQueryResponse(null);
         });
 
         Thread thread = new Thread(task);
