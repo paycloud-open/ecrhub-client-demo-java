@@ -57,6 +57,10 @@ public class RefundResponseController {
 
     @FXML
     private void refundReturnButtonAction(ActionEvent event) {
+        if (task != null && task.isRunning()) {
+            task.cancel();
+        }
+        PurchaseManager.getInstance().setRefundResponse(null);
         SceneManager.getInstance().loadScene("shopping", "/com/example/ecrhub/fxml/shopping.fxml");
         SceneManager.getInstance().switchScene("shopping");
     }
@@ -88,6 +92,10 @@ public class RefundResponseController {
         task.setOnFailed(fail -> {
             alert.setContentText("connect error!");
             alert.showAndWait();
+        });
+
+        task.setOnCancelled(cancel -> {
+            PurchaseManager.getInstance().setRefundResponse(null);
         });
 
         Thread thread = new Thread(task);
@@ -126,7 +134,8 @@ public class RefundResponseController {
         RefundRequest request = new RefundRequest();
         request.setApp_id(CommonConstant.APP_ID);
         request.setOrig_merchant_order_no(origMerchantOrderNo);
-        request.setMerchant_order_no("C" + new Date().getTime() + RandomUtil.randomNumbers(4));
+        request.setMerchant_order_no("C" + origMerchantOrderNo);
+//        request.setMerchant_order_no("C" + new Date().getTime() + RandomUtil.randomNumbers(4));
         return request;
     }
 }

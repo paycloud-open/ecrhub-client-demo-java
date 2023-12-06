@@ -1,6 +1,7 @@
 package com.example.ecrhub.manager;
 
 
+import com.codepay.register.sdk.model.response.CloseResponse;
 import com.codepay.register.sdk.model.response.PurchaseResponse;
 import com.codepay.register.sdk.model.response.QueryResponse;
 import com.codepay.register.sdk.model.response.RefundResponse;
@@ -23,6 +24,8 @@ public class PurchaseManager {
     private QueryResponse queryResponse;
 
     private RefundResponse refundResponse;
+
+    private CloseResponse closeResponse;
 
     private Label trans_amount;
 
@@ -57,6 +60,14 @@ public class PurchaseManager {
 
     public void setQueryResponse(QueryResponse queryResponse) {
         this.queryResponse = queryResponse;
+    }
+
+    public CloseResponse getCloseResponse() {
+        return closeResponse;
+    }
+
+    public void setCloseResponse(CloseResponse closeResponse) {
+        this.closeResponse = closeResponse;
     }
 
     public Label getTrans_amount() {

@@ -24,6 +24,12 @@
            </ScrollPane>
        </HBox>
        <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
+           <ProgressIndicator  fx:id="progress_indicator" visible="false"/>
+       </HBox>
+       <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
+           <Label  text="Please wait..." fx:id="wait_label" visible="false"/>
+       </HBox>
+       <HBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="BOTTOM_CENTER">
            <Button fx:id="returnButton" mnemonicParsing="false" onAction="#queryReturnButtonAction" text="Back" />
            <Button fx:id="queryButton" mnemonicParsing="false" onAction="#handleQueryButtonAction" text="Query" />
        </HBox>

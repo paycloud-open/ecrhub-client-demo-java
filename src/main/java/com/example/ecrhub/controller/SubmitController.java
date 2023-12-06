@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 /**
  * @author: yanzx
@@ -180,6 +181,7 @@ public class SubmitController {
 
     @FXML
     private void handleCloseButtonAction(ActionEvent event) {
+
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Close");
 
@@ -188,15 +190,28 @@ public class SubmitController {
             protected String call() throws Exception {
                 progress_indicator.setVisible(false);
                 wait_label.setVisible(false);
-                Close();
-                return "success";
+                PurchaseManager.getInstance().setCloseResponse(Close());
+                CloseResponse closeResponse = PurchaseManager.getInstance().getCloseResponse();
+                if (Objects.equals(closeResponse.getResponse_msg(), "")){
+                    return "success";
+                }else {
+                    task.setOnFailed(fail -> {
+                        alert.setContentText(closeResponse.getResponse_msg());
+                        alert.showAndWait();
+                    });
+                    return "fail";
+                }
             }
         };
 
         task.setOnSucceeded(success -> {
             submitButton.setDisable(false);
             closeButton.setDisable(true);
-            alert.setContentText("close success");
+        });
+
+        task.setOnFailed(fail -> {
+            CloseResponse closeResponse = PurchaseManager.getInstance().getCloseResponse();
+            alert.setContentText(closeResponse.getResponse_msg());
             alert.showAndWait();
         });
 
@@ -204,7 +219,7 @@ public class SubmitController {
         thread.start();
     }
 
-    private void Close() throws Exception {
+    private CloseResponse Close() throws Exception {
 
         ECRHubClientManager instance = ECRHubClientManager.getInstance();
         // 设备选择
@@ -219,8 +234,9 @@ public class SubmitController {
         request.setApp_id(CommonConstant.APP_ID);
         request.setMerchant_order_no(merchant_order_no.getText());
         System.out.println("Close request:" + request);
-        CloseResponse response = client.execute(request);
-        System.out.println("Close response:" + response);
+        CloseResponse closeResponse = client.execute(request);
+        System.out.println("Close response:" + closeResponse);
+        return closeResponse;
     }
 
     private PurchaseResponse requestToECR(String amount_str) throws Exception {
