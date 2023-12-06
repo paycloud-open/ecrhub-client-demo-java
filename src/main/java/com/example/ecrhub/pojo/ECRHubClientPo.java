@@ -1,7 +1,8 @@
 package com.example.ecrhub.pojo;
 
-import com.wiseasy.ecr.hub.sdk.ECRHubClient;
-import com.wiseasy.ecr.hub.sdk.device.ECRHubDevice;
+
+import com.codepay.register.sdk.ECRHubClient;
+import com.codepay.register.sdk.device.ECRHubDevice;
 
 /**
  * @author: yanzx

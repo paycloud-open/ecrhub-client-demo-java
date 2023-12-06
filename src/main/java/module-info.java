@@ -9,7 +9,7 @@ module com.example.ecrhub {
     requires com.fazecast.jSerialComm;
     requires org.java_websocket;
     requires org.slf4j;
-    requires ecrhub.client.sdk.java;
+    requires codepay.register.sdk.java;
     requires javax.jmdns;
 
 

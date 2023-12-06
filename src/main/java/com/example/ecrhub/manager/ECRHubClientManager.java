@@ -1,10 +1,10 @@
 package com.example.ecrhub.manager;
 
+import com.codepay.register.sdk.ECRHubClient;
+import com.codepay.register.sdk.ECRHubClientFactory;
+import com.codepay.register.sdk.exception.ECRHubException;
+import com.codepay.register.sdk.model.response.ECRHubResponse;
 import com.example.ecrhub.pojo.ECRHubClientPo;
-import com.wiseasy.ecr.hub.sdk.ECRHubClient;
-import com.wiseasy.ecr.hub.sdk.ECRHubClientFactory;
-import com.wiseasy.ecr.hub.sdk.exception.ECRHubException;
-import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
 
 import java.util.LinkedHashMap;
 

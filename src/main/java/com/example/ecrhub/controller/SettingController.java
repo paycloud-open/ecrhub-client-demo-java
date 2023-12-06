@@ -1,9 +1,9 @@
 package com.example.ecrhub.controller;
 
+import com.codepay.register.sdk.ECRHubClient;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.manager.SceneManager;
 import com.example.ecrhub.pojo.ECRHubClientPo;
-import com.wiseasy.ecr.hub.sdk.ECRHubClient;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

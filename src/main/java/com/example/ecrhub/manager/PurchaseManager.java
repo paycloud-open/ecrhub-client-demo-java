@@ -1,8 +1,9 @@
 package com.example.ecrhub.manager;
 
-import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
-import com.wiseasy.ecr.hub.sdk.model.response.QueryResponse;
-import com.wiseasy.ecr.hub.sdk.model.response.RefundResponse;
+
+import com.codepay.register.sdk.model.response.PurchaseResponse;
+import com.codepay.register.sdk.model.response.QueryResponse;
+import com.codepay.register.sdk.model.response.RefundResponse;
 import javafx.scene.control.Label;
 
 /**

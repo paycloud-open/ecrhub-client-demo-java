@@ -89,11 +89,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.wiseasy</groupId>
+            <groupId>com.cpdepay</groupId>
             <artifactId>ecrhub-client-sdk-java</artifactId>
-            <version>1.1.4</version>
+            <version>1.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/ecrhub-client-sdk-java-1.1.4.jar</systemPath>
+            <systemPath>${project.basedir}/lib/codepay-register-sdk-java-1.0.0.jar</systemPath>
         </dependency>
 
         <!-- logback -->

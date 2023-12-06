@@ -2,11 +2,11 @@ package com.example.ecrhub.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.codepay.register.sdk.ECRHubClient;
+import com.codepay.register.sdk.model.response.ECRHubResponse;
 import com.example.ecrhub.manager.ECRHubClientManager;
 import com.example.ecrhub.util.JSONFormatUtil;
 import com.example.ecrhub.util.SwitchButton;
-import com.wiseasy.ecr.hub.sdk.ECRHubClient;
-import com.wiseasy.ecr.hub.sdk.model.response.ECRHubResponse;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -1,10 +1,9 @@
 package com.example.ecrhub.controller;
 
+import com.codepay.register.sdk.model.response.PurchaseResponse;
 import com.example.ecrhub.manager.PurchaseManager;
 import com.example.ecrhub.manager.SceneManager;
 import com.example.ecrhub.util.JSONFormatUtil;
-import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
-import com.wiseasy.ecr.hub.sdk.model.response.RefundResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
