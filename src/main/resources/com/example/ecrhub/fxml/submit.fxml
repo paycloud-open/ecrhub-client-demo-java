@@ -28,7 +28,7 @@
            <Label alignment="CENTER_RIGHT" minWidth="180" text="Trans Amount: " />
            <TextField fx:id="trans_amount" prefHeight="26.0" prefWidth="200.0">
                <font>
-                   <Font size="20.0" />
+                   <Font size="15.0" />
                </font>
            </TextField>
        </HBox>
