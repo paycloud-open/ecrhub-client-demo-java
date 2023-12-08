@@ -1,5 +1,6 @@
 package com.example.ecrhub.manager;
 
+import com.wiseasy.ecr.hub.sdk.model.request.QueryRequest;
 import com.wiseasy.ecr.hub.sdk.model.response.CloseResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.QueryResponse;
@@ -21,6 +22,8 @@ public class PurchaseManager {
     private PurchaseResponse response;
 
     private QueryResponse queryResponse;
+
+    private QueryRequest queryRequest;
 
     private RefundResponse refundResponse;
 
@@ -59,6 +62,14 @@ public class PurchaseManager {
 
     public void setQueryResponse(QueryResponse queryResponse) {
         this.queryResponse = queryResponse;
+    }
+
+    public QueryRequest getQueryRequest() {
+        return queryRequest;
+    }
+
+    public void setQueryRequest(QueryRequest queryRequest) {
+        this.queryRequest = queryRequest;
     }
 
     public CloseResponse getCloseResponse() {

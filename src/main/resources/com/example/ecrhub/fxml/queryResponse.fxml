@@ -17,6 +17,12 @@
            <Label minWidth="150" text="Trans Amount: " />
            <TextField fx:id="trans_amount" disable="true" prefHeight="26.0" prefWidth="200.0" />
        </HBox>
+<!--       <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_RIGHT">-->
+<!--           <Label minWidth="150" text="Request information: " />-->
+<!--           <ScrollPane fitToWidth="true" fitToHeight="true">-->
+<!--               <TextArea prefHeight="300.0" editable="false" wrapText="true" prefWidth="400.0" fx:id="request_info"/>-->
+<!--           </ScrollPane>-->
+<!--       </HBox>-->
        <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
            <Label minWidth="150" text="Response information: " />
            <ScrollPane fitToWidth="true" fitToHeight="true">

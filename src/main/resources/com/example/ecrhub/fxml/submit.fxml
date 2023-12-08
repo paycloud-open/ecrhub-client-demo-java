@@ -26,11 +26,11 @@
        </HBox>
        <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
            <Label alignment="CENTER_RIGHT" minWidth="180" text="Trans Amount: " />
-           <Label fx:id="trans_amount" prefHeight="26.0" prefWidth="200.0">
+           <TextField fx:id="trans_amount" prefHeight="26.0" prefWidth="200.0">
                <font>
                    <Font size="20.0" />
                </font>
-           </Label>
+           </TextField>
        </HBox>
        <HBox alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
            <Label alignment="CENTER_RIGHT" minWidth="180" text="Payment method category: "/>

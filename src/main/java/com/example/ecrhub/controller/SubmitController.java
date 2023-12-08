@@ -52,7 +52,7 @@ public class SubmitController {
     private Task<String> task = null;
 
     @FXML
-    private Label trans_amount;
+    private TextField trans_amount;
 
     @FXML
     private Label terminal_sn;
@@ -196,11 +196,13 @@ public class SubmitController {
                 if (Objects.equals(closeResponse.getResponse_msg(), "")){
                     return "success";
                 }else {
-                    task.setOnFailed(fail -> {
-                        alert.setContentText(closeResponse.getResponse_msg());
-                        alert.showAndWait();
-                    });
-                    return "fail";
+                    if (closeResponse.getResponse_msg() != null) {
+                        task.setOnFailed(fail -> {
+                            alert.setContentText(closeResponse.getResponse_msg());
+                            alert.showAndWait();
+                        });
+                    }
+                        return "fail";
                 }
             }
         };
@@ -212,8 +214,10 @@ public class SubmitController {
 
         task.setOnFailed(fail -> {
             CloseResponse closeResponse = PurchaseManager.getInstance().getCloseResponse();
-            alert.setContentText(closeResponse.getResponse_msg());
-            alert.showAndWait();
+            if (closeResponse.getResponse_msg() != null){
+                alert.setContentText(closeResponse.getResponse_msg());
+                alert.showAndWait();
+            }
         });
 
         Thread thread = new Thread(task);
@@ -233,7 +237,7 @@ public class SubmitController {
         }
         CloseRequest request = new CloseRequest();
         request.setApp_id(CommonConstant.APP_ID);
-        request.setMerchant_order_no(merchant_order_no.getText());
+//        request.setMerchant_order_no(merchant_order_no.getText());
         System.out.println("Close request:" + request);
         CloseResponse closeResponse = client.execute(request);
         System.out.println("Close response:" + closeResponse);
@@ -258,7 +262,7 @@ public class SubmitController {
         request.setOrder_amount(amount_str);
         request.setPay_method_category(pay_method_category_choice.getValue());
         ECRHubConfig requestConfig = new ECRHubConfig();
-        requestConfig.getSerialPortConfig().setReadTimeout(210000);
+        requestConfig.getSerialPortConfig().setReadTimeout(150000);
         request.setConfig(requestConfig);
 
         if ("QR_C_SCAN_B".equals(request.getPay_method_category())) {

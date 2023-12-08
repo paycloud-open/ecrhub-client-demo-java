@@ -46,10 +46,10 @@ public class ShoppingController {
         String[][] products = {
                 {"Beer", "1.00"},
                 {"Coffee", "8.80"},
-                {"Hamburg", "10.00"},
+                {"Hamburg", "100000.00"},
                 {"Waffle", "0.01"},
                 {"Milk", "3.50"},
-                {"Pasta", "20.00"},
+                {"Pasta", "3000.00"},
                 {"Pudding", "3.33"},
                 {"Cocktail", "12.00"},
                 {"Steak", "15.00"}
