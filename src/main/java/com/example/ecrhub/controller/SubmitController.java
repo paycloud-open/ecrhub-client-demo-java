@@ -214,7 +214,7 @@ public class SubmitController {
 
         task.setOnFailed(fail -> {
             CloseResponse closeResponse = PurchaseManager.getInstance().getCloseResponse();
-            if (closeResponse.getResponse_msg() != null){
+            if ( closeResponse!= null && closeResponse.getResponse_msg() != null){
                 alert.setContentText(closeResponse.getResponse_msg());
                 alert.showAndWait();
             }
