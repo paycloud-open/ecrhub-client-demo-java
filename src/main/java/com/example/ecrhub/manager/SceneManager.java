@@ -23,7 +23,7 @@ public class SceneManager {
         sceneMap = new HashMap<>();
     }
 
-    public static SceneManager getInstance() {
+    public static synchronized SceneManager getInstance() {
         if (instance == null) {
             instance = new SceneManager();
         }

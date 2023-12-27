@@ -33,7 +33,7 @@ public class PurchaseManager {
 
     private Label merchant_order_no;
 
-    public static PurchaseManager getInstance() {
+    public static synchronized PurchaseManager getInstance() {
         if (instance == null) {
             instance = new PurchaseManager();
         }

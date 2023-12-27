@@ -35,7 +35,7 @@ public class ECRHubClientManager {
     // socket连接client列表
     private LinkedHashMap<String, ECRHubClientPo> client_list = new LinkedHashMap<>();
 
-    public static ECRHubClientManager getInstance() {
+    public static synchronized ECRHubClientManager getInstance() {
         if (instance == null) {
             instance = new ECRHubClientManager();
         }
