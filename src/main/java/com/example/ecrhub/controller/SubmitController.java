@@ -13,7 +13,6 @@ import com.wiseasy.ecr.hub.sdk.model.request.CloseRequest;
 import com.wiseasy.ecr.hub.sdk.model.request.PurchaseRequest;
 import com.wiseasy.ecr.hub.sdk.model.response.CloseResponse;
 import com.wiseasy.ecr.hub.sdk.model.response.PurchaseResponse;
-import com.wiseasy.ecr.hub.sdk.model.response.RefundResponse;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -193,16 +192,15 @@ public class SubmitController {
                 wait_label.setVisible(false);
                 PurchaseManager.getInstance().setCloseResponse(Close());
                 CloseResponse closeResponse = PurchaseManager.getInstance().getCloseResponse();
-                if (Objects.equals(closeResponse.getResponse_msg(), "")){
+                if (closeResponse != null && Objects.equals(closeResponse.getResponse_msg(), "")) {
                     return "success";
-                }else {
-                    if (closeResponse.getResponse_msg() != null) {
-                        task.setOnFailed(fail -> {
-                            alert.setContentText(closeResponse.getResponse_msg());
-                            alert.showAndWait();
-                        });
-                    }
-                        return "fail";
+                } else {
+                    String response_msg = closeResponse == null ? "Close error!" : closeResponse.getResponse_msg();
+                    task.setOnFailed(fail -> {
+                        alert.setContentText(response_msg);
+                        alert.showAndWait();
+                    });
+                    return "fail";
                 }
             }
         };
@@ -214,7 +212,7 @@ public class SubmitController {
 
         task.setOnFailed(fail -> {
             CloseResponse closeResponse = PurchaseManager.getInstance().getCloseResponse();
-            if ( closeResponse!= null && closeResponse.getResponse_msg() != null){
+            if (closeResponse != null && closeResponse.getResponse_msg() != null) {
                 alert.setContentText(closeResponse.getResponse_msg());
                 alert.showAndWait();
             }
@@ -239,7 +237,13 @@ public class SubmitController {
         request.setApp_id(CommonConstant.APP_ID);
 //        request.setMerchant_order_no(merchant_order_no.getText());
         System.out.println("Close request:" + request);
-        CloseResponse closeResponse = client.execute(request);
+        CloseResponse closeResponse;
+        try {
+            closeResponse = client.execute(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            closeResponse = null;
+        }
         System.out.println("Close response:" + closeResponse);
         return closeResponse;
     }
@@ -272,7 +276,7 @@ public class SubmitController {
         // Execute purchase request
         try {
             System.out.println("Purchase Request:" + request);
-            Platform.runLater(()-> {
+            Platform.runLater(() -> {
                 merchant_order_no.setText(request.getMerchant_order_no());
             });
             PurchaseResponse response = client.execute(request);
