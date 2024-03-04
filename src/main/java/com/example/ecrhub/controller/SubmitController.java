@@ -22,9 +22,13 @@ import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: yanzx
@@ -90,7 +94,7 @@ public class SubmitController {
         progress_indicator.setDisable(true);
         progress_indicator.setVisible(false);
         wait_label.setVisible(false);
-        closeButton.setDisable(true);
+        closeButton.setDisable(false);
 
         if (PurchaseManager.getInstance().getTrans_amount() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -103,7 +107,7 @@ public class SubmitController {
         pay_method_category_choice.getItems().addAll("BANKCARD", "QR_C_SCAN_B", "QR_B_SCAN_C");
         pay_method_category_choice.setValue("BANKCARD");
 
-        pay_method_id_choice.getItems().addAll("PAYNOW", "Alipay", "Smart Ví", "Alipay+", "WecatPay");
+        pay_method_id_choice.getItems().addAll("PAYNOW","Duitnow QR", "Alipay", "Smart Ví", "Alipay+", "WecatPay", "UnionPay QR", "TNG EWALLET");
         pay_method_id_choice.setValue("PAYNOW");
 
         // 添加监听器
@@ -208,7 +212,7 @@ public class SubmitController {
         task.setOnSucceeded(success -> {
             submitButton.setDisable(false);
             closeButton.setDisable(true);
-        });
+        });//01-04 08:05:50.677  01-04 08:07:07.183
 
         task.setOnFailed(fail -> {
             CloseResponse closeResponse = PurchaseManager.getInstance().getCloseResponse();
@@ -235,8 +239,11 @@ public class SubmitController {
         }
         CloseRequest request = new CloseRequest();
         request.setApp_id(CommonConstant.APP_ID);
+        ECRHubConfig config = new ECRHubConfig();
+        config.getSerialPortConfig().setReadTimeout(10000);
+        request.setConfig(config);
 //        request.setMerchant_order_no(merchant_order_no.getText());
-        System.out.println("Close request:" + request);
+        System.out.println("Start Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nClose request:" + request);
         CloseResponse closeResponse;
         try {
             closeResponse = client.execute(request);
@@ -244,7 +251,7 @@ public class SubmitController {
             e.printStackTrace();
             closeResponse = null;
         }
-        System.out.println("Close response:" + closeResponse);
+        System.out.println("End Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nClose response:" + closeResponse);
         return closeResponse;
     }
 
@@ -275,12 +282,12 @@ public class SubmitController {
 
         // Execute purchase request
         try {
-            System.out.println("Purchase Request:" + request);
+            System.out.println("Start Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nPurchase Request:" + request);
             Platform.runLater(() -> {
                 merchant_order_no.setText(request.getMerchant_order_no());
             });
             PurchaseResponse response = client.execute(request);
-            System.out.println("Purchase Response:" + response);
+            System.out.println("End Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nPurchase Response:" + response);
             return response;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

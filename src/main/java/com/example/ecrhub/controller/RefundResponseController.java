@@ -15,6 +15,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -134,9 +136,9 @@ public class RefundResponseController {
 
         for (String origMerchantOrderNo : origMerchantOrderNumbers) {
             RefundRequest request = createRefundRequest(origMerchantOrderNo);
-            System.out.println("Refund request:" + request);
+            System.out.println("Start Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nRefund request:" + request);
             RefundResponse refundResponse = client.execute(request);
-            System.out.println("Refund response:" + refundResponse);
+            System.out.println("End Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nRefund response:" + refundResponse);
             refundResponses.add(refundResponse);
         }
         // 返回最后一个响应
@@ -144,7 +146,7 @@ public class RefundResponseController {
     }
 
     private RefundRequest createRefundRequest(String origMerchantOrderNo) {
-        String MerchantOrderNo = "C" + origMerchantOrderNo;
+        String MerchantOrderNo = "C" + origMerchantOrderNo + "Refund";
         if (merchant_order_no.getText() != null) {
             MerchantOrderNo = merchant_order_no.getText();
         }

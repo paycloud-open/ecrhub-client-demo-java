@@ -17,6 +17,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -133,10 +135,10 @@ public class QueryResponseController {
             QueryRequest request = new QueryRequest();
             request.setApp_id(CommonConstant.APP_ID);
             request.setMerchant_order_no(origMerchantOrderNo);
-            System.out.println("Query request:" + request);
+            System.out.println("Start Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nQuery request:" + request);
             QueryResponse queryResponse = client.execute(request);
 //            PurchaseManager.getInstance().setQueryRequest(request);
-            System.out.println("Query response:" + queryResponse);
+            System.out.println("End Time：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")) + "\nQuery response:" + queryResponse);
             queryResponses.add(queryResponse);
 //            return queryResponse;
         }
